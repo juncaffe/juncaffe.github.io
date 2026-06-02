@@ -3,41 +3,1316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pockee - Automated Household Account Book</title>
+    <title>Pockee - Smart Personal Finance App</title>
+    <meta name="description" content="Pockee is a smart personal finance app for income, expenses, budgets, split payments, loans, and multi-currency spending.">
+    <meta name="keywords" content="Pockee, personal finance app, household account book, budget planner, expense tracker, split payment, loan tracker, currency converter">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#6200EE">
+
+    <link rel="canonical" href="https://juncaffe.github.io/?lang=en">
+    <link rel="alternate" hreflang="en" href="https://juncaffe.github.io/?lang=en">
+    <link rel="alternate" hreflang="ko" href="https://juncaffe.github.io/?lang=ko">
+    <link rel="alternate" hreflang="ja" href="https://juncaffe.github.io/?lang=ja">
+    <link rel="alternate" hreflang="zh-CN" href="https://juncaffe.github.io/?lang=zh-cn">
+    <link rel="alternate" hreflang="zh-TW" href="https://juncaffe.github.io/?lang=zh-tw">
+    <link rel="alternate" hreflang="x-default" href="https://juncaffe.github.io/?lang=en">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Pockee - Smart Personal Finance App">
+    <meta property="og:description" content="Manage income, expenses, budgets, split payments, loans, and multi-currency spending with Pockee.">
+    <meta property="og:url" content="https://juncaffe.github.io/?lang=en">
+    <meta property="og:image" content="https://juncaffe.github.io/assets/images/pockee_graphic_image_en_1024.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pockee - Smart Personal Finance App">
+    <meta name="twitter:description" content="Manage income, expenses, budgets, split payments, loans, and multi-currency spending with Pockee.">
+    <meta name="twitter:image" content="https://juncaffe.github.io/assets/images/pockee_graphic_image_en_1024.png">
+
+    <script type="application/ld+json" id="structuredData">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Pockee",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "url": "https://juncaffe.github.io/",
+      "downloadUrl": "https://play.google.com/store/apps/details?id=com.juncaffe.pockee",
+      "description": "Pockee is a smart personal finance app for income, expenses, budgets, split payments, loans, and multi-currency spending."
+    }
+    </script>
+
     <style>
+        :root {
+            --primary: #6200EE;
+            --primary-dark: #4B00B5;
+            --primary-soft: #F6F0FF;
+            --blue-soft: #E8F3FF;
+            --green-soft: #E6F7EF;
+            --orange-soft: #FFF7E6;
+            --bg: #F5F7FA;
+            --surface: #FFFFFF;
+            --surface-soft: #F9FAFB;
+            --text: #191F28;
+            --sub-text: #6B7684;
+            --muted: #8B95A1;
+            --border: #EEF0F3;
+            --shadow: 0 18px 44px rgba(25,31,40,0.08);
+            --radius-xl: 28px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
+            margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background:
+                radial-gradient(circle at 12% 0%, rgba(98, 0, 238, 0.14), transparent 34%),
+                radial-gradient(circle at 92% 12%, rgba(27, 100, 218, 0.10), transparent 30%),
+                var(--bg);
+            color: var(--text);
             line-height: 1.6;
-            max-width: 800px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            max-width: 1120px;
             margin: 0 auto;
-            padding: 2rem;
-            text-align: center;
-            color: #333;
+            padding: 24px;
         }
-        .graphic-img {
-            max-width: 100%;
-            height: auto;
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding: 14px 16px;
+            border: 1px solid rgba(238, 240, 243, 0.9);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 24px rgba(25,31,40,0.04);
+            position: sticky;
+            top: 12px;
+            z-index: 20;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin: 2rem 0;
+            display: grid;
+            place-items: center;
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(98,0,238,0.22);
+            font-size: 18px;
         }
-        h1 { color: #1a73e8; }
-        footer { margin-top: 3rem; color: #777; font-size: 0.9rem; }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .language-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: #fff;
+            color: var(--sub-text);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .language-control select {
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--text);
+            font-weight: 900;
+        }
+
+        .nav-link {
+            padding: 10px 14px;
+            border-radius: 999px;
+            color: var(--sub-text);
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .nav-link:hover {
+            background: var(--surface-soft);
+            color: var(--text);
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+            gap: 34px;
+            align-items: center;
+            padding: 40px 0 34px;
+        }
+
+        .hero-copy {
+            min-width: 0;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 900;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(40px, 6vw, 72px);
+            line-height: 1.05;
+            letter-spacing: -0.06em;
+        }
+
+        .hero-title-accent {
+            color: var(--primary);
+        }
+
+        .hero-subtitle {
+            margin: 22px 0 0;
+            color: var(--sub-text);
+            font-size: clamp(17px, 2.1vw, 22px);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            max-width: 660px;
+        }
+
+        .cta-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 48px;
+            padding: 0 18px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 900;
+            border: 1px solid transparent;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 14px 30px rgba(98,0,238,0.22);
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .button-secondary {
+            background: #fff;
+            color: var(--primary);
+            border-color: rgba(98,0,238,0.18);
+        }
+
+        .button-secondary:hover {
+            background: var(--primary-soft);
+        }
+
+        .hero-points {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 28px;
+            max-width: 660px;
+        }
+
+        .hero-point {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--sub-text);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .check {
+            width: 22px;
+            height: 22px;
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            background: var(--green-soft);
+            color: #15803D;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .visual-card {
+            padding: 14px;
+            border-radius: var(--radius-xl);
+            background: rgba(255,255,255,0.75);
+            border: 1px solid rgba(238,240,243,0.9);
+            box-shadow: var(--shadow);
+        }
+
+        .graphic-img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 22px;
+            background: #fff;
+        }
+
+        .trust-strip {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin: 18px 0 44px;
+        }
+
+        .trust-item {
+            padding: 18px;
+            border-radius: var(--radius-md);
+            background: #fff;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 22px rgba(25,31,40,0.035);
+        }
+
+        .trust-value {
+            color: var(--primary);
+            font-size: 22px;
+            font-weight: 950;
+            letter-spacing: -0.04em;
+        }
+
+        .trust-label {
+            margin-top: 4px;
+            color: var(--sub-text);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        section {
+            margin: 52px 0;
+        }
+
+        .section-head {
+            max-width: 720px;
+            margin: 0 auto 24px;
+            text-align: center;
+        }
+
+        .section-kicker {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 950;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            margin: 8px 0 0;
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.18;
+            letter-spacing: -0.045em;
+        }
+
+        .section-description {
+            margin: 12px auto 0;
+            color: var(--sub-text);
+            font-size: 16px;
+            font-weight: 600;
+            max-width: 680px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .feature-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: 0 8px 22px rgba(25,31,40,0.035);
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+            background: var(--primary-soft);
+            margin-bottom: 16px;
+        }
+
+        .feature-card:nth-child(2n) .feature-icon {
+            background: var(--blue-soft);
+        }
+
+        .feature-card:nth-child(3n) .feature-icon {
+            background: var(--orange-soft);
+        }
+
+        .feature-title {
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+        }
+
+        .feature-description {
+            margin: 9px 0 0;
+            color: var(--sub-text);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .flow {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .flow-step {
+            position: relative;
+            padding: 22px;
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 22px rgba(25,31,40,0.035);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 950;
+            margin-bottom: 14px;
+        }
+
+        .flow-title {
+            margin: 0;
+            font-size: 17px;
+            letter-spacing: -0.02em;
+        }
+
+        .flow-description {
+            margin: 8px 0 0;
+            color: var(--sub-text);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .fx-banner {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 20px;
+            align-items: center;
+            padding: 26px;
+            border-radius: var(--radius-xl);
+            background: linear-gradient(135deg, #FFFFFF, #F6F0FF);
+            border: 1px solid rgba(98,0,238,0.14);
+            box-shadow: var(--shadow);
+        }
+
+        .fx-title {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.25;
+            letter-spacing: -0.035em;
+        }
+
+        .fx-description {
+            margin: 8px 0 0;
+            color: var(--sub-text);
+            font-size: 15px;
+            font-weight: 650;
+        }
+
+        .final-cta {
+            text-align: center;
+            padding: 40px 24px;
+            border-radius: var(--radius-xl);
+            background: var(--text);
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+
+        .final-cta h2 {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.18;
+            letter-spacing: -0.045em;
+        }
+
+        .final-cta p {
+            margin: 12px auto 0;
+            max-width: 640px;
+            color: rgba(255,255,255,0.76);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .final-cta .cta-row {
+            justify-content: center;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 28px 0 10px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--sub-text);
+        }
+
+        @media (max-width: 860px) {
+            .page {
+                padding: 16px;
+            }
+
+            .nav {
+                align-items: stretch;
+                border-radius: 22px;
+                position: static;
+                flex-direction: column;
+            }
+
+            .nav-actions {
+                justify-content: flex-start;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                padding-top: 22px;
+            }
+
+            .hero-points {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-strip,
+            .feature-grid,
+            .flow {
+                grid-template-columns: 1fr;
+            }
+
+            .fx-banner {
+                grid-template-columns: 1fr;
+            }
+
+            .fx-banner .button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .nav-actions,
+            .cta-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .language-control,
+            .button,
+            .nav-link {
+                width: 100%;
+            }
+
+            .language-control {
+                justify-content: space-between;
+            }
+
+            .hero {
+                gap: 22px;
+            }
+
+            .visual-card {
+                padding: 8px;
+                border-radius: 22px;
+            }
+
+            .graphic-img {
+                border-radius: 18px;
+            }
+
+            section {
+                margin: 42px 0;
+            }
+
+            .feature-card,
+            .flow-step,
+            .fx-banner,
+            .final-cta {
+                border-radius: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Pockee</h1>
-    <p>Efficiently manage your finances with On-device AI.</p>
+    <div class="page">
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="/" aria-label="Pockee home">
+                <span class="brand-icon">P</span>
+                <span>Pockee</span>
+            </a>
+            <div class="nav-actions">
+                <a class="nav-link" href="#features" data-i18n="navFeatures">Features</a>
+                <a class="nav-link" id="fxNavLink" href="/pockee-data/?lang=en" data-i18n="navFx">Currency Converter</a>
+                <div class="language-control">
+                    <label for="languageSelect" data-i18n="language">Language</label>
+                    <select id="languageSelect" aria-label="Language">
+                        <option value="en">English</option>
+                        <option value="ko">한국어</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh-cn">简体中文</option>
+                        <option value="zh-tw">繁體中文</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
 
-    <!-- 그래픽 이미지 삽입 -->
-    <a href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee">
-        <img src="./assets/images/pockee_graphic_image_en_1024.png" 
-             alt="Pockee Graphic Image" 
-             class="graphic-img">
-    </a>
-    <hr>
-    <footer>
-        <p>© 2026 JunCaffe. All rights reserved.</p>
-    </footer>
+        <main>
+            <section class="hero" aria-labelledby="heroTitle">
+                <div class="hero-copy">
+                    <div class="eyebrow" data-i18n="eyebrow">Smart personal finance app</div>
+                    <h1 id="heroTitle">
+                        <span data-i18n="heroTitleLine1">A finance app</span><br>
+                        <span class="hero-title-accent" data-i18n="heroTitleLine2">that learns with you</span>
+                    </h1>
+                    <p class="hero-subtitle" data-i18n="heroSubtitle">
+                        Manage income, expenses, budgets, split payments, loans, and multi-currency spending in one place.
+                    </p>
+                    <div class="cta-row">
+                        <a class="button button-primary"
+                           href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           data-i18n="primaryCta">
+                            Get Pockee on Google Play
+                        </a>
+                        <a class="button button-secondary" id="heroFxLink" href="/pockee-data/?lang=en" data-i18n="secondaryCta">
+                            Try the currency converter
+                        </a>
+                    </div>
+                    <div class="hero-points">
+                        <div class="hero-point"><span class="check">✓</span><span data-i18n="pointAi">On-device smart suggestions</span></div>
+                        <div class="hero-point"><span class="check">✓</span><span data-i18n="pointInstallment">Split payment tracking</span></div>
+                        <div class="hero-point"><span class="check">✓</span><span data-i18n="pointLoan">Loan repayment management</span></div>
+                        <div class="hero-point"><span class="check">✓</span><span data-i18n="pointCurrency">Multi-currency support</span></div>
+                    </div>
+                </div>
+
+                <a class="visual-card"
+                   href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Open Pockee on Google Play">
+                    <img src="./assets/images/pockee_graphic_image_en_1024.png"
+                         alt="Pockee app graphic"
+                         class="graphic-img"
+                         id="heroImage">
+                </a>
+            </section>
+
+            <div class="trust-strip" aria-label="Pockee highlights">
+                <div class="trust-item">
+                    <div class="trust-value" data-i18n="trustValue1">5</div>
+                    <div class="trust-label" data-i18n="trustLabel1">Supported languages</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-value" data-i18n="trustValue2">AI</div>
+                    <div class="trust-label" data-i18n="trustLabel2">Smart input support</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-value" data-i18n="trustValue3">FX</div>
+                    <div class="trust-label" data-i18n="trustLabel3">Multi-currency records</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-value" data-i18n="trustValue4">OFF</div>
+                    <div class="trust-label" data-i18n="trustLabel4">Works offline</div>
+                </div>
+            </div>
+
+            <section id="features" aria-labelledby="featuresTitle">
+                <div class="section-head">
+                    <div class="section-kicker" data-i18n="featuresKicker">Features</div>
+                    <h2 class="section-title" id="featuresTitle" data-i18n="featuresTitle">
+                        More than a simple expense tracker.
+                    </h2>
+                    <p class="section-description" data-i18n="featuresDescription">
+                        Pockee helps you record faster, understand spending better, and manage long-term payments together.
+                    </p>
+                </div>
+
+                <div class="feature-grid">
+                    <article class="feature-card">
+                        <div class="feature-icon">✨</div>
+                        <h3 class="feature-title" data-i18n="feature1Title">Personalized suggestions</h3>
+                        <p class="feature-description" data-i18n="feature1Desc">
+                            Frequently used transaction names and categories are remembered to make future input easier.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">🔔</div>
+                        <h3 class="feature-title" data-i18n="feature2Title">Notification-based input assistant</h3>
+                        <p class="feature-description" data-i18n="feature2Desc">
+                            Payment notifications can help prepare transaction drafts before you manually enter them.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3 class="feature-title" data-i18n="feature3Title">Budgets and insights</h3>
+                        <p class="feature-description" data-i18n="feature3Desc">
+                            Check monthly totals, category spending, payment method usage, and budget progress.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">💳</div>
+                        <h3 class="feature-title" data-i18n="feature4Title">Split payment management</h3>
+                        <p class="feature-description" data-i18n="feature4Desc">
+                            Track installment-style transactions, remaining balance, payment count, and next payment dates.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">🏦</div>
+                        <h3 class="feature-title" data-i18n="feature5Title">Loan repayment tracking</h3>
+                        <p class="feature-description" data-i18n="feature5Desc">
+                            Manage principal, interest, remaining balance, repayment history, and repayment progress.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">🌍</div>
+                        <h3 class="feature-title" data-i18n="feature6Title">Multi-currency support</h3>
+                        <p class="feature-description" data-i18n="feature6Desc">
+                            Record travel, overseas shopping, and subscriptions with exchange-rate based conversion.
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <section aria-labelledby="flowTitle">
+                <div class="section-head">
+                    <div class="section-kicker" data-i18n="flowKicker">How it helps</div>
+                    <h2 class="section-title" id="flowTitle" data-i18n="flowTitle">
+                        The more you use it, the easier it gets.
+                    </h2>
+                </div>
+
+                <div class="flow">
+                    <article class="flow-step">
+                        <div class="step-number">01</div>
+                        <h3 class="flow-title" data-i18n="flow1Title">Record your spending</h3>
+                        <p class="flow-description" data-i18n="flow1Desc">
+                            Add income and expenses with categories, payment methods, memos, and ledgers.
+                        </p>
+                    </article>
+
+                    <article class="flow-step">
+                        <div class="step-number">02</div>
+                        <h3 class="flow-title" data-i18n="flow2Title">Pockee remembers patterns</h3>
+                        <p class="flow-description" data-i18n="flow2Desc">
+                            Repeated transaction names and category choices become easier to reuse.
+                        </p>
+                    </article>
+
+                    <article class="flow-step">
+                        <div class="step-number">03</div>
+                        <h3 class="flow-title" data-i18n="flow3Title">Review your money flow</h3>
+                        <p class="flow-description" data-i18n="flow3Desc">
+                            Use charts and summaries to understand where your money goes.
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <section aria-labelledby="fxTitle">
+                <div class="fx-banner">
+                    <div>
+                        <h2 class="fx-title" id="fxTitle" data-i18n="fxTitle">
+                            Check exchange rates before recording overseas spending.
+                        </h2>
+                        <p class="fx-description" data-i18n="fxDescription">
+                            Pockee FX uses the same exchange-rate data prepared for Pockee's multi-currency features.
+                        </p>
+                    </div>
+                    <a class="button button-secondary" id="fxBannerLink" href="/pockee-data/?lang=en" data-i18n="fxCta">
+                        Open Pockee FX
+                    </a>
+                </div>
+            </section>
+
+            <section class="final-cta" aria-labelledby="finalCtaTitle">
+                <h2 id="finalCtaTitle" data-i18n="finalTitle">
+                    Start managing your money with Pockee.
+                </h2>
+                <p data-i18n="finalDescription">
+                    From daily expenses to budgets, split payments, loans, and overseas spending, keep your finances together in one app.
+                </p>
+                <div class="cta-row">
+                    <a class="button button-primary"
+                       href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       data-i18n="primaryCta">
+                        Get Pockee on Google Play
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div>© 2026 JunCaffe. All rights reserved.</div>
+            <div class="footer-links">
+                <a href="/pockee-data/?lang=en" id="footerFxLink" data-i18n="navFx">Currency Converter</a>
+                <a href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   data-i18n="footerStore">Google Play</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.juncaffe.pockee';
+        const SUPPORTED_LANGUAGES = ['en', 'ko', 'ja', 'zh-cn', 'zh-tw'];
+
+        const PAGE_META = {
+            en: {
+                langAttr: 'en',
+                title: 'Pockee - Smart Personal Finance App',
+                description: 'Pockee is a smart personal finance app for income, expenses, budgets, split payments, loans, and multi-currency spending.',
+                keywords: 'Pockee, personal finance app, household account book, budget planner, expense tracker, split payment, loan tracker, currency converter',
+                ogTitle: 'Pockee - Smart Personal Finance App',
+                ogDescription: 'Manage income, expenses, budgets, split payments, loans, and multi-currency spending with Pockee.'
+            },
+            ko: {
+                langAttr: 'ko',
+                title: 'Pockee - 나를 알아가는 스마트 가계부',
+                description: 'Pockee는 수입·지출, 예산, 분할거래, 대출, 다중 통화 지출까지 한 곳에서 관리하는 스마트 가계부입니다.',
+                keywords: 'Pockee, 포키, 가계부, 스마트 가계부, 예산 관리, 지출 관리, 할부 관리, 분할거래, 대출 관리, 환율 계산기',
+                ogTitle: 'Pockee - 나를 알아가는 스마트 가계부',
+                ogDescription: '수입·지출부터 예산, 분할거래, 대출, 다중 통화 지출까지 Pockee에서 관리하세요.'
+            },
+            ja: {
+                langAttr: 'ja',
+                title: 'Pockee - 使うほど自分に合うスマート家計簿',
+                description: 'Pockeeは収入・支出、予算、分割払い、ローン、多通貨の支出までまとめて管理できるスマート家計簿です。',
+                keywords: 'Pockee, 家計簿, スマート家計簿, 支出管理, 予算管理, 分割払い, ローン管理, 為替計算',
+                ogTitle: 'Pockee - 使うほど自分に合うスマート家計簿',
+                ogDescription: '収入・支出から予算、分割払い、ローン、多通貨の支出までPockeeでまとめて管理できます。'
+            },
+            'zh-cn': {
+                langAttr: 'zh-CN',
+                title: 'Pockee - 越用越懂你的智能记账应用',
+                description: 'Pockee 是一款智能记账应用，可管理收入、支出、预算、分期交易、贷款和多货币支出。',
+                keywords: 'Pockee, 记账, 记账应用, 智能记账, 预算管理, 支出管理, 分期交易, 贷款管理, 汇率计算器',
+                ogTitle: 'Pockee - 越用越懂你的智能记账应用',
+                ogDescription: '用 Pockee 管理收入、支出、预算、分期交易、贷款和多货币支出。'
+            },
+            'zh-tw': {
+                langAttr: 'zh-TW',
+                title: 'Pockee - 越用越懂你的智慧記帳 App',
+                description: 'Pockee 是一款智慧記帳 App，可管理收入、支出、預算、分期交易、貸款和多幣別支出。',
+                keywords: 'Pockee, 記帳, 記帳 App, 智慧記帳, 預算管理, 支出管理, 分期交易, 貸款管理, 匯率計算器',
+                ogTitle: 'Pockee - 越用越懂你的智慧記帳 App',
+                ogDescription: '用 Pockee 管理收入、支出、預算、分期交易、貸款和多幣別支出。'
+            }
+        };
+
+        const I18N = {
+            en: {
+                navFeatures: 'Features',
+                navFx: 'Currency Converter',
+                language: 'Language',
+                eyebrow: 'Smart personal finance app',
+                heroTitleLine1: 'A finance app',
+                heroTitleLine2: 'that learns with you',
+                heroSubtitle: 'Manage income, expenses, budgets, split payments, loans, and multi-currency spending in one place.',
+                primaryCta: 'Get Pockee on Google Play',
+                secondaryCta: 'Try the currency converter',
+                pointAi: 'On-device smart suggestions',
+                pointInstallment: 'Split payment tracking',
+                pointLoan: 'Loan repayment management',
+                pointCurrency: 'Multi-currency support',
+                trustValue1: '5',
+                trustLabel1: 'Supported languages',
+                trustValue2: 'AI',
+                trustLabel2: 'Smart input support',
+                trustValue3: 'FX',
+                trustLabel3: 'Multi-currency records',
+                trustValue4: 'OFF',
+                trustLabel4: 'Works offline',
+                featuresKicker: 'Features',
+                featuresTitle: 'More than a simple expense tracker.',
+                featuresDescription: 'Pockee helps you record faster, understand spending better, and manage long-term payments together.',
+                feature1Title: 'Personalized suggestions',
+                feature1Desc: 'Frequently used transaction names and categories are remembered to make future input easier.',
+                feature2Title: 'Notification-based input assistant',
+                feature2Desc: 'Payment notifications can help prepare transaction drafts before you manually enter them.',
+                feature3Title: 'Budgets and insights',
+                feature3Desc: 'Check monthly totals, category spending, payment method usage, and budget progress.',
+                feature4Title: 'Split payment management',
+                feature4Desc: 'Track installment-style transactions, remaining balance, payment count, and next payment dates.',
+                feature5Title: 'Loan repayment tracking',
+                feature5Desc: 'Manage principal, interest, remaining balance, repayment history, and repayment progress.',
+                feature6Title: 'Multi-currency support',
+                feature6Desc: 'Record travel, overseas shopping, and subscriptions with exchange-rate based conversion.',
+                flowKicker: 'How it helps',
+                flowTitle: 'The more you use it, the easier it gets.',
+                flow1Title: 'Record your spending',
+                flow1Desc: 'Add income and expenses with categories, payment methods, memos, and ledgers.',
+                flow2Title: 'Pockee remembers patterns',
+                flow2Desc: 'Repeated transaction names and category choices become easier to reuse.',
+                flow3Title: 'Review your money flow',
+                flow3Desc: 'Use charts and summaries to understand where your money goes.',
+                fxTitle: 'Check exchange rates before recording overseas spending.',
+                fxDescription: 'Pockee FX uses the same exchange-rate data prepared for Pockee’s multi-currency features.',
+                fxCta: 'Open Pockee FX',
+                finalTitle: 'Start managing your money with Pockee.',
+                finalDescription: 'From daily expenses to budgets, split payments, loans, and overseas spending, keep your finances together in one app.',
+                footerStore: 'Google Play',
+                imageAlt: 'Pockee app graphic'
+            },
+            ko: {
+                navFeatures: '주요 기능',
+                navFx: '환율 계산기',
+                language: '언어',
+                eyebrow: '스마트 가계부 앱',
+                heroTitleLine1: '쓸수록 나에게 맞춰지는',
+                heroTitleLine2: '스마트 가계부',
+                heroSubtitle: '수입·지출부터 예산, 분할거래, 대출, 다중 통화 지출까지 한 곳에서 관리하세요.',
+                primaryCta: 'Google Play에서 Pockee 설치하기',
+                secondaryCta: '환율 계산기 보기',
+                pointAi: '온디바이스 스마트 추천',
+                pointInstallment: '분할거래 진행 관리',
+                pointLoan: '대출 상환 관리',
+                pointCurrency: '다중 통화 지원',
+                trustValue1: '5',
+                trustLabel1: '지원 언어',
+                trustValue2: 'AI',
+                trustLabel2: '입력 보조',
+                trustValue3: 'FX',
+                trustLabel3: '다중 통화 기록',
+                trustValue4: 'OFF',
+                trustLabel4: '오프라인 사용',
+                featuresKicker: '주요 기능',
+                featuresTitle: '단순 지출 기록을 넘어선 가계부.',
+                featuresDescription: 'Pockee는 더 빠르게 기록하고, 지출 흐름을 더 쉽게 이해하며, 장기 결제까지 함께 관리할 수 있도록 도와줍니다.',
+                feature1Title: '개인화 추천',
+                feature1Desc: '자주 쓰는 거래명과 카테고리를 기억해 다음 입력을 더 쉽게 도와줍니다.',
+                feature2Title: '알림 기반 입력 보조',
+                feature2Desc: '결제 알림을 바탕으로 거래 등록 전 입력 후보를 준비할 수 있습니다.',
+                feature3Title: '예산과 통계',
+                feature3Desc: '월별 합계, 카테고리별 지출, 결제수단 비중, 예산 진행 상황을 확인할 수 있습니다.',
+                feature4Title: '분할거래 관리',
+                feature4Desc: '할부처럼 나눠 내는 거래의 잔액, 납부 횟수, 다음 납부일을 관리할 수 있습니다.',
+                feature5Title: '대출 상환 관리',
+                feature5Desc: '원금, 이자, 잔액, 상환 내역, 상환 진행률을 함께 관리할 수 있습니다.',
+                feature6Title: '다중 통화 지원',
+                feature6Desc: '여행, 해외직구, 해외 구독 결제를 환율 기반으로 기록하고 확인할 수 있습니다.',
+                flowKicker: '사용 흐름',
+                flowTitle: '쓸수록 입력이 더 편해집니다.',
+                flow1Title: '거래를 기록하세요',
+                flow1Desc: '수입과 지출을 카테고리, 결제수단, 메모, 가계부별로 기록할 수 있습니다.',
+                flow2Title: 'Pockee가 패턴을 기억해요',
+                flow2Desc: '반복되는 거래명과 카테고리 선택을 다음 입력에 더 쉽게 활용할 수 있습니다.',
+                flow3Title: '돈의 흐름을 확인하세요',
+                flow3Desc: '차트와 요약으로 어디에 돈을 쓰고 있는지 쉽게 확인할 수 있습니다.',
+                fxTitle: '해외 결제를 기록하기 전에 환율을 확인해보세요.',
+                fxDescription: 'Pockee FX는 Pockee의 다중 통화 기능에 사용되는 환율 데이터를 기반으로 제공합니다.',
+                fxCta: 'Pockee FX 열기',
+                finalTitle: 'Pockee로 돈 관리를 시작해보세요.',
+                finalDescription: '매일의 지출부터 예산, 분할거래, 대출, 해외 결제까지 하나의 앱에서 함께 관리하세요.',
+                footerStore: 'Google Play',
+                imageAlt: 'Pockee 앱 소개 이미지'
+            },
+            ja: {
+                navFeatures: '主な機能',
+                navFx: '為替計算',
+                language: '言語',
+                eyebrow: 'スマート家計簿アプリ',
+                heroTitleLine1: '使うほど自分に合う',
+                heroTitleLine2: 'スマート家計簿',
+                heroSubtitle: '収入・支出から予算、分割払い、ローン、多通貨の支出まで一つのアプリで管理できます。',
+                primaryCta: 'Google PlayでPockeeを入手',
+                secondaryCta: '為替計算を試す',
+                pointAi: 'オンデバイスのスマート提案',
+                pointInstallment: '分割払いの管理',
+                pointLoan: 'ローン返済管理',
+                pointCurrency: '多通貨対応',
+                trustValue1: '5',
+                trustLabel1: '対応言語',
+                trustValue2: 'AI',
+                trustLabel2: '入力サポート',
+                trustValue3: 'FX',
+                trustLabel3: '多通貨記録',
+                trustValue4: 'OFF',
+                trustLabel4: 'オフライン利用',
+                featuresKicker: '主な機能',
+                featuresTitle: '単なる支出記録を超えた家計簿。',
+                featuresDescription: 'Pockeeは記録をより速く、支出の流れをより分かりやすく、長期の支払いも一緒に管理できるようサポートします。',
+                feature1Title: 'パーソナライズ提案',
+                feature1Desc: 'よく使う取引名やカテゴリを記憶し、次回の入力をより簡単にします。',
+                feature2Title: '通知ベースの入力補助',
+                feature2Desc: '決済通知をもとに、手入力前の取引候補を準備できます。',
+                feature3Title: '予算と統計',
+                feature3Desc: '月別合計、カテゴリ別支出、支払い方法の比率、予算の進捗を確認できます。',
+                feature4Title: '分割払い管理',
+                feature4Desc: '分割払いのような取引の残高、支払い回数、次回支払日を管理できます。',
+                feature5Title: 'ローン返済管理',
+                feature5Desc: '元金、利息、残高、返済履歴、返済進捗をまとめて管理できます。',
+                feature6Title: '多通貨対応',
+                feature6Desc: '旅行、海外通販、海外サブスクの支出を為替レートに基づいて記録できます。',
+                flowKicker: '使い方',
+                flowTitle: '使うほど入力が楽になります。',
+                flow1Title: '支出を記録',
+                flow1Desc: '収入と支出をカテゴリ、支払い方法、メモ、家計簿ごとに記録できます。',
+                flow2Title: 'Pockeeがパターンを記憶',
+                flow2Desc: '繰り返し使う取引名やカテゴリ選択を次回の入力に活用できます。',
+                flow3Title: 'お金の流れを確認',
+                flow3Desc: 'チャートとサマリーで、どこにお金を使っているか確認できます。',
+                fxTitle: '海外支出を記録する前に為替レートを確認しましょう。',
+                fxDescription: 'Pockee FXは、Pockeeの多通貨機能で使う為替データをもとに提供しています。',
+                fxCta: 'Pockee FXを開く',
+                finalTitle: 'Pockeeでお金の管理を始めましょう。',
+                finalDescription: '毎日の支出から予算、分割払い、ローン、海外支出まで一つのアプリで管理できます。',
+                footerStore: 'Google Play',
+                imageAlt: 'Pockeeアプリ紹介画像'
+            },
+            'zh-cn': {
+                navFeatures: '主要功能',
+                navFx: '汇率计算器',
+                language: '语言',
+                eyebrow: '智能记账应用',
+                heroTitleLine1: '越用越懂你的',
+                heroTitleLine2: '智能记账应用',
+                heroSubtitle: '从收入、支出到预算、分期交易、贷款和多货币支出，都可以在一个应用中管理。',
+                primaryCta: '在 Google Play 获取 Pockee',
+                secondaryCta: '试用汇率计算器',
+                pointAi: '设备端智能推荐',
+                pointInstallment: '分期交易管理',
+                pointLoan: '贷款还款管理',
+                pointCurrency: '多货币支持',
+                trustValue1: '5',
+                trustLabel1: '支持语言',
+                trustValue2: 'AI',
+                trustLabel2: '智能输入辅助',
+                trustValue3: 'FX',
+                trustLabel3: '多货币记录',
+                trustValue4: 'OFF',
+                trustLabel4: '离线使用',
+                featuresKicker: '主要功能',
+                featuresTitle: '不只是简单的支出记录。',
+                featuresDescription: 'Pockee 帮助你更快记录，更清楚地了解支出流向，并一起管理长期付款。',
+                feature1Title: '个性化推荐',
+                feature1Desc: '常用的交易名称和分类会被记住，让下次输入更轻松。',
+                feature2Title: '基于通知的输入辅助',
+                feature2Desc: '可根据支付通知，在手动输入前准备交易候选内容。',
+                feature3Title: '预算和统计',
+                feature3Desc: '查看每月合计、分类支出、支付方式占比和预算进度。',
+                feature4Title: '分期交易管理',
+                feature4Desc: '管理类似分期付款的交易余额、付款次数和下一次付款日期。',
+                feature5Title: '贷款还款管理',
+                feature5Desc: '管理本金、利息、余额、还款记录和还款进度。',
+                feature6Title: '多货币支持',
+                feature6Desc: '旅行、海外购物和海外订阅支出可按汇率进行记录和查看。',
+                flowKicker: '使用方式',
+                flowTitle: '越使用，输入越轻松。',
+                flow1Title: '记录收支',
+                flow1Desc: '按分类、支付方式、备注和账本记录收入与支出。',
+                flow2Title: 'Pockee 记住使用习惯',
+                flow2Desc: '重复的交易名称和分类选择，可在下次输入时更方便地复用。',
+                flow3Title: '查看资金流向',
+                flow3Desc: '通过图表和摘要了解钱花在哪里。',
+                fxTitle: '记录海外支出前，先查看汇率。',
+                fxDescription: 'Pockee FX 使用为 Pockee 多货币功能准备的同一套汇率数据。',
+                fxCta: '打开 Pockee FX',
+                finalTitle: '开始用 Pockee 管理你的钱。',
+                finalDescription: '从日常支出到预算、分期交易、贷款和海外支出，都可以在一个应用中管理。',
+                footerStore: 'Google Play',
+                imageAlt: 'Pockee 应用介绍图片'
+            },
+            'zh-tw': {
+                navFeatures: '主要功能',
+                navFx: '匯率計算器',
+                language: '語言',
+                eyebrow: '智慧記帳 App',
+                heroTitleLine1: '越用越懂你的',
+                heroTitleLine2: '智慧記帳 App',
+                heroSubtitle: '從收入、支出到預算、分期交易、貸款和多幣別支出，都可以在一個 App 中管理。',
+                primaryCta: '在 Google Play 取得 Pockee',
+                secondaryCta: '試用匯率計算器',
+                pointAi: '裝置端智慧推薦',
+                pointInstallment: '分期交易管理',
+                pointLoan: '貸款還款管理',
+                pointCurrency: '多幣別支援',
+                trustValue1: '5',
+                trustLabel1: '支援語言',
+                trustValue2: 'AI',
+                trustLabel2: '智慧輸入輔助',
+                trustValue3: 'FX',
+                trustLabel3: '多幣別記錄',
+                trustValue4: 'OFF',
+                trustLabel4: '離線使用',
+                featuresKicker: '主要功能',
+                featuresTitle: '不只是簡單的支出記錄。',
+                featuresDescription: 'Pockee 幫助你更快記錄，更清楚地了解支出流向，並一起管理長期付款。',
+                feature1Title: '個人化推薦',
+                feature1Desc: '常用的交易名稱和分類會被記住，讓下次輸入更輕鬆。',
+                feature2Title: '基於通知的輸入輔助',
+                feature2Desc: '可根據支付通知，在手動輸入前準備交易候選內容。',
+                feature3Title: '預算與統計',
+                feature3Desc: '查看每月合計、分類支出、支付方式占比和預算進度。',
+                feature4Title: '分期交易管理',
+                feature4Desc: '管理類似分期付款的交易餘額、付款次數和下一次付款日期。',
+                feature5Title: '貸款還款管理',
+                feature5Desc: '管理本金、利息、餘額、還款記錄和還款進度。',
+                feature6Title: '多幣別支援',
+                feature6Desc: '旅行、海外購物和海外訂閱支出可按匯率進行記錄和查看。',
+                flowKicker: '使用方式',
+                flowTitle: '越使用，輸入越輕鬆。',
+                flow1Title: '記錄收支',
+                flow1Desc: '按分類、支付方式、備註和帳本記錄收入與支出。',
+                flow2Title: 'Pockee 記住使用習慣',
+                flow2Desc: '重複的交易名稱和分類選擇，可在下次輸入時更方便地重用。',
+                flow3Title: '查看資金流向',
+                flow3Desc: '透過圖表和摘要了解錢花在哪裡。',
+                fxTitle: '記錄海外支出前，先查看匯率。',
+                fxDescription: 'Pockee FX 使用為 Pockee 多幣別功能準備的同一套匯率資料。',
+                fxCta: '開啟 Pockee FX',
+                finalTitle: '開始用 Pockee 管理你的錢。',
+                finalDescription: '從日常支出到預算、分期交易、貸款和海外支出，都可以在一個 App 中管理。',
+                footerStore: 'Google Play',
+                imageAlt: 'Pockee App 介紹圖片'
+            }
+        };
+
+        function getLanguageFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const lang = params.get('lang')?.toLowerCase();
+            if (SUPPORTED_LANGUAGES.includes(lang)) return lang;
+
+            const browserLang = navigator.language?.toLowerCase() || '';
+            if (browserLang.startsWith('ko')) return 'ko';
+            if (browserLang.startsWith('ja')) return 'ja';
+            if (browserLang === 'zh-cn' || browserLang.includes('hans')) return 'zh-cn';
+            if (browserLang === 'zh-tw' || browserLang === 'zh-hk' || browserLang.includes('hant')) return 'zh-tw';
+            return 'en';
+        }
+
+        function getLocalizedUrl(lang) {
+            return `https://juncaffe.github.io/?lang=${lang}`;
+        }
+
+        function getPockeeFxUrl(lang) {
+            return `/pockee-data/?lang=${lang}`;
+        }
+
+        function setMeta(name, content) {
+            let element = document.querySelector(`meta[name="${name}"]`);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute('name', name);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('content', content);
+        }
+
+        function setPropertyMeta(property, content) {
+            let element = document.querySelector(`meta[property="${property}"]`);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute('property', property);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('content', content);
+        }
+
+        function setLink(rel, href, hreflang) {
+            const selector = hreflang
+                ? `link[rel="${rel}"][hreflang="${hreflang}"]`
+                : `link[rel="${rel}"]:not([hreflang])`;
+            let element = document.querySelector(selector);
+            if (!element) {
+                element = document.createElement('link');
+                element.setAttribute('rel', rel);
+                if (hreflang) element.setAttribute('hreflang', hreflang);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('href', href);
+        }
+
+        function updateStructuredData(lang, meta) {
+            const structuredData = {
+                '@context': 'https://schema.org',
+                '@type': 'SoftwareApplication',
+                name: 'Pockee',
+                applicationCategory: 'FinanceApplication',
+                operatingSystem: 'Android',
+                offers: {
+                    '@type': 'Offer',
+                    price: '0',
+                    priceCurrency: 'USD'
+                },
+                url: getLocalizedUrl(lang),
+                downloadUrl: PLAY_STORE_URL,
+                description: meta.description
+            };
+
+            const element = document.getElementById('structuredData');
+            if (element) {
+                element.textContent = JSON.stringify(structuredData, null, 2);
+            }
+        }
+
+        function updateMeta(lang) {
+            const meta = PAGE_META[lang] || PAGE_META.en;
+            const canonicalUrl = getLocalizedUrl(lang);
+
+            document.documentElement.lang = meta.langAttr;
+            document.title = meta.title;
+            setMeta('description', meta.description);
+            setMeta('keywords', meta.keywords);
+            setPropertyMeta('og:title', meta.ogTitle);
+            setPropertyMeta('og:description', meta.ogDescription);
+            setPropertyMeta('og:url', canonicalUrl);
+            setMeta('twitter:title', meta.ogTitle);
+            setMeta('twitter:description', meta.ogDescription);
+            setLink('canonical', canonicalUrl);
+
+            updateStructuredData(lang, meta);
+        }
+
+        function renderLanguage(lang) {
+            const dictionary = I18N[lang] || I18N.en;
+
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (dictionary[key]) {
+                    element.textContent = dictionary[key];
+                }
+            });
+
+            const languageSelect = document.getElementById('languageSelect');
+            if (languageSelect) {
+                languageSelect.value = lang;
+            }
+
+            const fxUrl = getPockeeFxUrl(lang);
+            ['fxNavLink', 'heroFxLink', 'fxBannerLink', 'footerFxLink'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.setAttribute('href', fxUrl);
+                }
+            });
+
+            const heroImage = document.getElementById('heroImage');
+            if (heroImage) {
+                heroImage.setAttribute('alt', dictionary.imageAlt || I18N.en.imageAlt);
+            }
+
+            updateMeta(lang);
+        }
+
+        function redirectToLanguage(lang) {
+            const nextLang = SUPPORTED_LANGUAGES.includes(lang) ? lang : 'en';
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', nextLang);
+            window.location.href = url.toString();
+        }
+
+        function init() {
+            const lang = getLanguageFromUrl();
+            renderLanguage(lang);
+
+            const languageSelect = document.getElementById('languageSelect');
+            if (languageSelect) {
+                languageSelect.addEventListener('change', event => {
+                    redirectToLanguage(event.target.value);
+                });
+            }
+        }
+
+        init();
+    </script>
 </body>
 </html>

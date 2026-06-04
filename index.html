@@ -9,6 +9,14 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#6200EE">
 
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-M4HHD8ZD');</script>
+    <!-- End Google Tag Manager -->
+
     <link rel="canonical" href="https://juncaffe.github.io/?lang=en">
     <link rel="alternate" hreflang="en" href="https://juncaffe.github.io/?lang=en">
     <link rel="alternate" hreflang="ko" href="https://juncaffe.github.io/?lang=ko">
@@ -623,6 +631,11 @@
     </style>
 </head>
 <body>
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M4HHD8ZD"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div class="page">
         <nav class="nav" aria-label="Main navigation">
             <a class="brand" href="/" aria-label="Pockee home">
@@ -631,7 +644,12 @@
             </a>
             <div class="nav-actions">
                 <a class="nav-link" href="#features" data-i18n="navFeatures">Features</a>
-                <a class="nav-link" id="fxNavLink" href="/pockee-data/?lang=en" data-i18n="navFx">Currency Converter</a>
+                <a class="nav-link" id="fxNavLink" href="/pockee-data/?lang=en"
+                   data-track="fx_page_click"
+                   data-source="pockee_landing"
+                   data-page="landing"
+                   data-position="nav_fx"
+                   data-i18n="navFx">Currency Converter</a>
                 <div class="language-control">
                     <label for="languageSelect" data-i18n="language">Language</label>
                     <select id="languageSelect" aria-label="Language">
@@ -661,10 +679,19 @@
                            href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_cta"
                            target="_blank"
                            rel="noopener noreferrer"
+                           data-track="play_store_click"
+                           data-source="pockee_landing"
+                           data-page="landing"
+                           data-position="hero_cta"
                            data-i18n="primaryCta">
                             Get Pockee on Google Play
                         </a>
-                        <a class="button button-secondary" id="heroFxLink" href="/pockee-data/?lang=en" data-i18n="secondaryCta">
+                        <a class="button button-secondary" id="heroFxLink" href="/pockee-data/?lang=en"
+                           data-track="fx_page_click"
+                           data-source="pockee_landing"
+                           data-page="landing"
+                           data-position="hero_fx"
+                           data-i18n="secondaryCta">
                             Try the currency converter
                         </a>
                     </div>
@@ -677,9 +704,13 @@
                 </div>
 
                 <a class="visual-card"
-                   href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_cta"
+                   href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_image_cta"
                    target="_blank"
                    rel="noopener noreferrer"
+                   data-track="play_store_click"
+                   data-source="pockee_landing"
+                   data-page="landing"
+                   data-position="hero_image_cta"
                    aria-label="Open Pockee on Google Play">
                     <img src="./assets/images/pockee_graphic_image_en_1024.png"
                          alt="Pockee app graphic"
@@ -814,7 +845,12 @@
                             Pockee FX uses the same exchange-rate data prepared for Pockee's multi-currency features.
                         </p>
                     </div>
-                    <a class="button button-secondary" id="fxBannerLink" href="/pockee-data/?lang=en" data-i18n="fxCta">
+                    <a class="button button-secondary" id="fxBannerLink" href="/pockee-data/?lang=en"
+                       data-track="fx_page_click"
+                       data-source="pockee_landing"
+                       data-page="landing"
+                       data-position="banner_fx"
+                       data-i18n="fxCta">
                         Open Pockee FX
                     </a>
                 </div>
@@ -829,9 +865,13 @@
                 </p>
                 <div class="cta-row">
                     <a class="button button-primary"
-                       href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_cta"
+                       href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dfinal_cta"
                        target="_blank"
                        rel="noopener noreferrer"
+                       data-track="play_store_click"
+                       data-source="pockee_landing"
+                       data-page="landing"
+                       data-position="final_cta"
                        data-i18n="primaryCta">
                         Get Pockee on Google Play
                     </a>
@@ -842,11 +882,23 @@
         <footer>
             <div>© 2026 JunCaffe. All rights reserved.</div>
             <div class="footer-links">
-                <a href="/pockee-data/?lang=en" id="footerFxLink" data-i18n="navFx">Currency Converter</a>
-                <a href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_cta"
+                <a href="/pockee-data/?lang=en" id="footerFxLink"
+                   data-track="fx_page_click"
+                   data-source="pockee_landing"
+                   data-page="landing"
+                   data-position="footer_fx"
+                   data-i18n="navFx">Currency Converter</a>
+                <a href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dfooter_cta"
                    target="_blank"
                    rel="noopener noreferrer"
+                   data-track="play_store_click"
+                   data-source="pockee_landing"
+                   data-page="landing"
+                   data-position="footer_cta"
                    data-i18n="footerStore">Google Play</a>
+            </div>
+            <div style="flex-basis: 100%; margin-top: 4px; font-size: 12px; line-height: 1.5;" data-i18n="analyticsNotice">
+                This site uses Google Analytics to understand page visits, Play Store link clicks, and currency-converter link clicks. No personally identifiable information is intentionally collected.
             </div>
         </footer>
     </div>
@@ -950,7 +1002,8 @@
                 finalTitle: 'Start managing your money with Pockee.',
                 finalDescription: 'From daily expenses to budgets, split payments, loans, and overseas spending, keep your finances together in one app.',
                 footerStore: 'Google Play',
-                imageAlt: 'Pockee app graphic'
+                imageAlt: 'Pockee app graphic',
+                analyticsNotice: 'This site uses Google Analytics to understand page visits, Play Store link clicks, and currency-converter link clicks. No personally identifiable information is intentionally collected.'
             },
             ko: {
                 navFeatures: '주요 기능',
@@ -1003,7 +1056,8 @@
                 finalTitle: 'Pockee로 돈 관리를 시작해보세요.',
                 finalDescription: '매일의 지출부터 예산, 분할거래, 대출, 해외 결제까지 하나의 앱에서 함께 관리하세요.',
                 footerStore: 'Google Play',
-                imageAlt: 'Pockee 앱 소개 이미지'
+                imageAlt: 'Pockee 앱 소개 이미지',
+                analyticsNotice: '이 사이트는 페이지 방문, Play Store 링크 클릭, 환율 계산기 링크 클릭을 파악하기 위해 Google Analytics를 사용합니다. 개인을 직접 식별할 수 있는 정보는 의도적으로 수집하지 않습니다.'
             },
             ja: {
                 navFeatures: '主な機能',
@@ -1056,7 +1110,8 @@
                 finalTitle: 'Pockeeでお金の管理を始めましょう。',
                 finalDescription: '毎日の支出から予算、分割払い、ローン、海外支出まで一つのアプリで管理できます。',
                 footerStore: 'Google Play',
-                imageAlt: 'Pockeeアプリ紹介画像'
+                imageAlt: 'Pockeeアプリ紹介画像',
+                analyticsNotice: 'このサイトでは、ページ訪問数、Google Playリンクのクリック、為替計算リンクのクリックを把握するためにGoogle Analyticsを使用します。個人を直接識別できる情報を意図的に収集することはありません。'
             },
             'zh-cn': {
                 navFeatures: '主要功能',
@@ -1109,7 +1164,8 @@
                 finalTitle: '开始用 Pockee 管理你的钱。',
                 finalDescription: '从日常支出到预算、分期交易、贷款和海外支出，都可以在一个应用中管理。',
                 footerStore: 'Google Play',
-                imageAlt: 'Pockee 应用介绍图片'
+                imageAlt: 'Pockee 应用介绍图片',
+                analyticsNotice: '本网站使用 Google Analytics 了解页面访问、Google Play 链接点击和汇率计算器链接点击情况。我们不会有意收集可直接识别个人身份的信息。'
             },
             'zh-tw': {
                 navFeatures: '主要功能',
@@ -1162,7 +1218,8 @@
                 finalTitle: '開始用 Pockee 管理你的錢。',
                 finalDescription: '從日常支出到預算、分期交易、貸款和海外支出，都可以在一個 App 中管理。',
                 footerStore: 'Google Play',
-                imageAlt: 'Pockee App 介紹圖片'
+                imageAlt: 'Pockee App 介紹圖片',
+                analyticsNotice: '本網站使用 Google Analytics 了解頁面造訪、Google Play 連結點擊和匯率計算器連結點擊情況。我們不會有意收集可直接識別個人身分的資訊。'
             }
         };
 
@@ -1185,6 +1242,55 @@
 
         function getPockeeFxUrl(lang) {
             return `/pockee-data/?lang=${lang}`;
+        }
+
+
+        function getPlayStoreUrl(position, lang) {
+            const referrer = new URLSearchParams({
+                utm_source: 'pockee_landing',
+                utm_medium: 'web',
+                utm_campaign: 'landing_page',
+                utm_content: position || 'unknown',
+                utm_term: lang || 'en'
+            }).toString();
+
+            return `https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=${encodeURIComponent(referrer)}`;
+        }
+
+        function updateTrackedLinks(lang) {
+            document.querySelectorAll('[data-track="play_store_click"]').forEach(link => {
+                const position = link.dataset.position || 'unknown';
+                link.setAttribute('href', getPlayStoreUrl(position, lang));
+            });
+
+            const fxUrl = getPockeeFxUrl(lang);
+            document.querySelectorAll('[data-track="fx_page_click"]').forEach(link => {
+                link.setAttribute('href', fxUrl);
+            });
+        }
+
+        function pushTrackingEvent(eventName, params = {}) {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                event: eventName,
+                source: params.source || 'pockee_landing',
+                page: params.page || 'landing',
+                lang: params.lang || getLanguageFromUrl(),
+                position: params.position || 'unknown'
+            });
+        }
+
+        function initClickTracking() {
+            document.querySelectorAll('[data-track]').forEach(element => {
+                element.addEventListener('click', () => {
+                    pushTrackingEvent(element.dataset.track, {
+                        source: element.dataset.source,
+                        page: element.dataset.page,
+                        position: element.dataset.position,
+                        lang: getLanguageFromUrl()
+                    });
+                });
+            });
         }
 
         function setMeta(name, content) {
@@ -1284,6 +1390,7 @@
                     element.setAttribute('href', fxUrl);
                 }
             });
+            updateTrackedLinks(lang);
 
             const heroImage = document.getElementById('heroImage');
             if (heroImage) {
@@ -1310,6 +1417,8 @@
                     redirectToLanguage(event.target.value);
                 });
             }
+
+            initClickTracking();
         }
 
         init();

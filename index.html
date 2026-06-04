@@ -9,6 +9,54 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#6200EE">
 
+
+    <script>
+        (function () {
+            var supported = ['en', 'ko', 'ja', 'zh-cn', 'zh-tw'];
+
+            function normalizeLanguage(value) {
+                var normalized = String(value || '').trim().toLowerCase().replace('_', '-');
+                if (supported.indexOf(normalized) >= 0) return normalized;
+                if (normalized === 'zh' || normalized.indexOf('hans') >= 0) return 'zh-cn';
+                if (normalized === 'zh-hk' || normalized === 'zh-mo' || normalized.indexOf('hant') >= 0) return 'zh-tw';
+                return null;
+            }
+
+            function detectBrowserLanguage() {
+                var candidates = [];
+                if (navigator.languages && navigator.languages.length) {
+                    candidates = candidates.concat(navigator.languages);
+                }
+                if (navigator.language) {
+                    candidates.push(navigator.language);
+                }
+
+                for (var i = 0; i < candidates.length; i += 1) {
+                    var raw = String(candidates[i] || '').toLowerCase();
+                    var normalized = normalizeLanguage(raw);
+                    if (normalized) return normalized;
+                    if (raw.indexOf('ko') === 0) return 'ko';
+                    if (raw.indexOf('ja') === 0) return 'ja';
+                    if (raw.indexOf('zh-cn') === 0 || raw.indexOf('hans') >= 0) return 'zh-cn';
+                    if (raw.indexOf('zh-tw') === 0 || raw.indexOf('zh-hk') === 0 || raw.indexOf('hant') >= 0) return 'zh-tw';
+                    if (raw.indexOf('en') === 0) return 'en';
+                }
+
+                return 'en';
+            }
+
+            var url = new URL(window.location.href);
+            var currentLang = normalizeLanguage(url.searchParams.get('lang')) || detectBrowserLanguage();
+
+            window.POCKEE_INITIAL_LANG = currentLang;
+
+            if (!url.searchParams.get('lang')) {
+                url.searchParams.set('lang', currentLang);
+                window.history.replaceState({}, '', url.toString());
+            }
+        })();
+    </script>
+
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -49,7 +97,7 @@
         "priceCurrency": "USD"
       },
       "url": "https://juncaffe.github.io/",
-      "downloadUrl": "https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_cta",
+      "downloadUrl": "https://play.google.com/store/apps/details?id=com.juncaffe.pockee",
       "description": "Pockee is a smart personal finance app for income, expenses, budgets, split payments, loans, and multi-currency spending."
     }
     </script>
@@ -137,10 +185,17 @@
             border-radius: 12px;
             display: grid;
             place-items: center;
-            background: var(--primary);
-            color: #fff;
-            box-shadow: 0 10px 20px rgba(98,0,238,0.22);
-            font-size: 18px;
+            background: #FFFFFF;
+            box-shadow: 0 10px 20px rgba(98,0,238,0.16);
+            overflow: hidden;
+            flex: 0 0 auto;
+        }
+
+        .brand-icon-img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
         }
 
         .nav-actions {
@@ -639,7 +694,9 @@
     <div class="page">
         <nav class="nav" aria-label="Main navigation">
             <a class="brand" href="/" aria-label="Pockee home">
-                <span class="brand-icon">P</span>
+                <span class="brand-icon">
+                    <img src="./assets/images/pockee_icon.png" alt="Pockee" class="brand-icon-img">
+                </span>
                 <span>Pockee</span>
             </a>
             <div class="nav-actions">
@@ -904,7 +961,7 @@
     </div>
 
     <script>
-        const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_cta';
+        const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.juncaffe.pockee';
         const SUPPORTED_LANGUAGES = ['en', 'ko', 'ja', 'zh-cn', 'zh-tw'];
 
         const PAGE_META = {
@@ -1223,17 +1280,50 @@
             }
         };
 
+        function normalizeLanguage(lang) {
+            const normalized = String(lang || '').trim().toLowerCase().replace('_', '-');
+            if (SUPPORTED_LANGUAGES.includes(normalized)) return normalized;
+            if (normalized === 'zh' || normalized.includes('hans')) return 'zh-cn';
+            if (normalized === 'zh-hk' || normalized === 'zh-mo' || normalized.includes('hant')) return 'zh-tw';
+            return null;
+        }
+
+        function detectBrowserLanguage() {
+            const candidates = [
+                ...(navigator.languages || []),
+                navigator.language || ''
+            ];
+
+            for (const candidate of candidates) {
+                const raw = String(candidate || '').toLowerCase();
+                const normalized = normalizeLanguage(raw);
+                if (normalized) return normalized;
+
+                if (raw.startsWith('ko')) return 'ko';
+                if (raw.startsWith('ja')) return 'ja';
+                if (raw.startsWith('zh-cn') || raw.includes('hans')) return 'zh-cn';
+                if (raw.startsWith('zh-tw') || raw.startsWith('zh-hk') || raw.includes('hant')) return 'zh-tw';
+                if (raw.startsWith('en')) return 'en';
+            }
+
+            return 'en';
+        }
+
         function getLanguageFromUrl() {
             const params = new URLSearchParams(window.location.search);
-            const lang = params.get('lang')?.toLowerCase();
-            if (SUPPORTED_LANGUAGES.includes(lang)) return lang;
+            return normalizeLanguage(params.get('lang'));
+        }
 
-            const browserLang = navigator.language?.toLowerCase() || '';
-            if (browserLang.startsWith('ko')) return 'ko';
-            if (browserLang.startsWith('ja')) return 'ja';
-            if (browserLang === 'zh-cn' || browserLang.includes('hans')) return 'zh-cn';
-            if (browserLang === 'zh-tw' || browserLang === 'zh-hk' || browserLang.includes('hant')) return 'zh-tw';
-            return 'en';
+        function getCurrentLanguage() {
+            return getLanguageFromUrl() || window.POCKEE_INITIAL_LANG || detectBrowserLanguage();
+        }
+
+        function syncLanguageUrl(lang) {
+            const url = new URL(window.location.href);
+            if (!url.searchParams.get('lang')) {
+                url.searchParams.set('lang', lang);
+                window.history.replaceState({}, '', url.toString());
+            }
         }
 
         function getLocalizedUrl(lang) {
@@ -1275,7 +1365,7 @@
                 event: eventName,
                 source: params.source || 'pockee_landing',
                 page: params.page || 'landing',
-                lang: params.lang || getLanguageFromUrl(),
+                lang: params.lang || getCurrentLanguage(),
                 position: params.position || 'unknown'
             });
         }
@@ -1287,7 +1377,7 @@
                         source: element.dataset.source,
                         page: element.dataset.page,
                         position: element.dataset.position,
-                        lang: getLanguageFromUrl()
+                        lang: getCurrentLanguage()
                     });
                 });
             });
@@ -1340,7 +1430,7 @@
                     priceCurrency: 'USD'
                 },
                 url: getLocalizedUrl(lang),
-                downloadUrl: PLAY_STORE_URL,
+                downloadUrl: getPlayStoreUrl('structured_data', lang),
                 description: meta.description
             };
 
@@ -1369,6 +1459,7 @@
         }
 
         function renderLanguage(lang) {
+            syncLanguageUrl(lang);
             const dictionary = I18N[lang] || I18N.en;
 
             document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -1408,7 +1499,7 @@
         }
 
         function init() {
-            const lang = getLanguageFromUrl();
+            const lang = getCurrentLanguage();
             renderLanguage(lang);
 
             const languageSelect = document.getElementById('languageSelect');

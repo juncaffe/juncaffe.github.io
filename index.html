@@ -53,6 +53,7 @@
         var currentLang = explicitLang || detectBrowserLanguage();
 
         window.POCKEE_INITIAL_LANG = currentLang;
+        window.POCKEE_CURRENT_LANG = currentLang;
     })();
 </script>
 
@@ -693,6 +694,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M4HHD8ZD"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+
 <div class="page">
     <nav class="nav" aria-label="Main navigation">
         <a class="brand" href="/" aria-label="Pockee home">
@@ -1321,12 +1323,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function getCurrentLanguage() {
-        return getLanguageFromUrl() || window.POCKEE_INITIAL_LANG || detectBrowserLanguage();
+        return window.POCKEE_CURRENT_LANG || getLanguageFromUrl() || window.POCKEE_INITIAL_LANG || detectBrowserLanguage();
     }
 
     function syncLanguageUrl(lang) {
-        // Keep the root homepage URL unchanged for OAuth brand verification.
-        // The page language is rendered without automatically adding ?lang=...
+        // Do not rewrite the URL.
+        // The page language is applied by rendering text only.
     }
 
     function getLocalizedUrl(lang) {
@@ -1461,8 +1463,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function renderLanguage(lang) {
-        syncLanguageUrl(lang);
-        const dictionary = I18N[lang] || I18N.en;
+        const nextLang = normalizeLanguage(lang) || detectBrowserLanguage();
+        window.POCKEE_CURRENT_LANG = nextLang;
+
+        syncLanguageUrl(nextLang);
+
+        const dictionary = I18N[nextLang] || I18N.en;
 
         document.querySelectorAll('[data-i18n]').forEach(element => {
             const key = element.getAttribute('data-i18n');
@@ -1473,31 +1479,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         const languageSelect = document.getElementById('languageSelect');
         if (languageSelect) {
-            languageSelect.value = lang;
+            languageSelect.value = nextLang;
         }
 
-        const fxUrl = getPockeeFxUrl(lang);
+        const fxUrl = getPockeeFxUrl(nextLang);
         ['fxNavLink', 'heroFxLink', 'fxBannerLink', 'footerFxLink'].forEach(id => {
             const element = document.getElementById(id);
             if (element) {
                 element.setAttribute('href', fxUrl);
             }
         });
-        updateTrackedLinks(lang);
+
+        updateTrackedLinks(nextLang);
 
         const heroImage = document.getElementById('heroImage');
         if (heroImage) {
             heroImage.setAttribute('alt', dictionary.imageAlt || I18N.en.imageAlt);
         }
 
-        updateMeta(lang);
+        updateMeta(nextLang);
     }
 
     function redirectToLanguage(lang) {
-        const nextLang = SUPPORTED_LANGUAGES.includes(lang) ? lang : 'en';
-        const url = new URL(window.location.href);
-        url.searchParams.set('lang', nextLang);
-        window.location.href = url.toString();
+        const nextLang = normalizeLanguage(lang) || detectBrowserLanguage();
+        renderLanguage(nextLang);
     }
 
     function init() {

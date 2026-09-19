@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta name="google-site-verification" content="hcS0r8AD-3QUX4LmOXIKBfwD13iGkd7-PeI0zG_Q9LM" />
+    <meta name="google-site-verification" content="BQL43JIooOoNQz4lzelcoYEktAZkr8HM70CtKyB0CG4" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pockee Budget - Expense Tracker, Assets &amp; Car Log</title>
+    <meta name="description" content="Pockee logs receipts with a photo and card payments from notifications, then brings budgets, loans, installments, assets, net worth, car expenses and multi-currency spending together.">
+    <meta name="keywords" content="Pockee, budget app, expense tracker, receipt scanner, net worth tracker, asset management, car log, fuel economy, loan tracker, installment tracker, currency converter">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#FFF9F0">
+    <link rel="icon" type="image/webp" href="./assets/images/ic_launcher_512px.webp">
+    <link rel="apple-touch-icon" href="./assets/images/ic_launcher_512px.webp">
+<script>
+    /*
+     * 언어 판정은 첫 페인트 전에 끝나야 해서 인라인 동기 스크립트로 둔다.
+     * 아래 두 목록은 i18n.js와 중복이지만, i18n.js를 동기 로드하면 렌더가 막히므로 감수한다.
+     * 언어나 배너를 추가할 때 i18n.js와 함께 갱신할 것.
+     */
+    (function () {
+        var supported = ['en', 'ko', 'ja', 'zh-cn', 'zh-tw', 'vi', 'ms', 'hi', 'id'];
+        var localizedBanner = ['ko', 'ja', 'zh-cn', 'zh-tw', 'vi'];
+
+        function normalize(value) {
+            var normalized = String(value || '').trim().toLowerCase().replace('_', '-');
+            if (supported.indexOf(normalized) >= 0) return normalized;
+            if (normalized === 'zh' || normalized.indexOf('hans') >= 0) return 'zh-cn';
+            if (normalized === 'zh-hk' || normalized === 'zh-mo' || normalized.indexOf('hant') >= 0) return 'zh-tw';
+            return null;
+        }
+
+        function detect() {
+            var candidates = [];
+            if (navigator.languages && navigator.languages.length) {
+                candidates = candidates.concat(navigator.languages);
+            }
+            if (navigator.language) {
+                candidates.push(navigator.language);
+            }
+
+            for (var i = 0; i < candidates.length; i += 1) {
+                var raw = String(candidates[i] || '').toLowerCase();
+                var normalized = normalize(raw);
+                if (normalized) return normalized;
+
+                var base = raw.split('-')[0];
+                if (supported.indexOf(base) >= 0) return base;
+                if (raw.indexOf('hans') >= 0) return 'zh-cn';
+                if (raw.indexOf('hant') >= 0) return 'zh-tw';
+                if (base === 'zh') return 'zh-cn';
+            }
+
+            return 'en';
+        }
+
+        var explicitLang = normalize(new URL(window.location.href).searchParams.get('lang'));
+        var currentLang = explicitLang || detect();
+
+        window.PockeeLang = { normalize: normalize, detect: detect };
+        window.POCKEE_INITIAL_LANG = currentLang;
+        window.POCKEE_CURRENT_LANG = currentLang;
+
+        // 전용 배너가 있는 언어만 미리 받아 둔다. 영문은 <img src>가 이미 가리키고 있다.
+        if (localizedBanner.indexOf(currentLang) >= 0) {
+            var preload = document.createElement('link');
+            preload.rel = 'preload';
+            preload.as = 'image';
+            preload.href = './assets/images/banner_bbol_' + currentLang + '.webp';
+            document.head.appendChild(preload);
+        }
+    })();
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-M4HHD8ZD');</script>
+<!-- End Google Tag Manager -->
+
+<link rel="canonical" href="https://pockee.app/">
+<link rel="alternate" hreflang="en" href="https://pockee.app/?lang=en">
+<link rel="alternate" hreflang="ko" href="https://pockee.app/?lang=ko">
+<link rel="alternate" hreflang="ja" href="https://pockee.app/?lang=ja">
+<link rel="alternate" hreflang="zh-CN" href="https://pockee.app/?lang=zh-cn">
+<link rel="alternate" hreflang="zh-TW" href="https://pockee.app/?lang=zh-tw">
+<link rel="alternate" hreflang="vi" href="https://pockee.app/?lang=vi">
+<link rel="alternate" hreflang="ms" href="https://pockee.app/?lang=ms">
+<link rel="alternate" hreflang="hi" href="https://pockee.app/?lang=hi">
+<link rel="alternate" hreflang="id" href="https://pockee.app/?lang=id">
+<link rel="alternate" hreflang="x-default" href="https://pockee.app/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pockee">
+<meta property="og:title" content="Pockee Budget - Expense Tracker, Assets &amp; Car Log">
+<meta property="og:description" content="Snap receipts, log card payments from notifications, and see budgets, assets, net worth and car costs at a glance.">
+<meta property="og:url" content="https://pockee.app/">
+<!-- OG 이미지는 WebP 미리보기를 못 만드는 크롤러가 있어 PNG를 쓴다. -->
+<meta property="og:image" content="https://pockee.app/assets/images/banner-bbol.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="500">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pockee Budget - Expense Tracker, Assets &amp; Car Log">
+<meta name="twitter:description" content="Snap receipts, log card payments from notifications, and see budgets, assets, net worth and car costs at a glance.">
+<meta name="twitter:image" content="https://pockee.app/assets/images/banner-bbol.png">
+
+<script type="application/ld+json" id="structuredData">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Pockee",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Android",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "url": "https://pockee.app/",
+  "downloadUrl": "https://play.google.com/store/apps/details?id=com.juncaffe.pockee",
+  "description": "Pockee logs receipts with a photo and card payments from notifications, then brings budgets, loans, installments, assets, net worth, car expenses and multi-currency spending together."
+}
+</script>
+
+<link rel="stylesheet" href="./styles.css">
+<script defer src="./i18n.js"></script>
+<script defer src="./app.js"></script>
+</head>
+
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M4HHD8ZD"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div class="page">
+    <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href="./index.html" aria-label="Pockee home">
+            <span class="brand-icon">
+                <img src="./assets/images/ic_launcher_512px.webp" alt="Pockee" class="brand-icon-img" width="34" height="34">
+            </span>
+            <span>Pockee</span>
+        </a>
+        <div class="nav-actions">
+            <a class="nav-link" href="#features" data-i18n="navFeatures">Features</a>
+            <a class="nav-link" id="fxNavLink" href="./calculator/calculator.html?lang=en"
+               data-track="fx_page_click"
+               data-source="pockee_landing"
+               data-page="landing"
+               data-position="nav_fx"
+               data-i18n="navFx">Currency Converter</a>
+            <div class="language-control">
+                <label for="languageSelect" data-i18n="language">Language</label>
+                <select id="languageSelect" aria-label="Language">
+                    <option value="en">English</option>
+                    <option value="ko">한국어</option>
+                    <option value="ja">日本語</option>
+                    <option value="zh-cn">简体中文</option>
+                    <option value="zh-tw">繁體中文</option>
+                    <option value="vi">Tiếng Việt</option>
+                    <option value="ms">Bahasa Melayu</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="id">Bahasa Indonesia</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero" aria-labelledby="heroTitle">
+            <div class="hero-copy">
+                <div class="eyebrow" data-i18n="eyebrow">Smart budget &amp; asset tracker</div>
+                <h1 id="heroTitle">
+                    <span data-i18n="heroTitleLine1">Logging made easy,</span><br>
+                    <span class="hero-title-accent" data-i18n="heroTitleLine2">money at a glance</span>
+                </h1>
+                <p class="hero-subtitle" data-i18n="heroSubtitle">
+                    Log receipts with a single photo and card payments right from their notifications, then keep accounts, cards, stocks, real estate and loans together in one place.
+                </p>
+                <div class="cta-row">
+                    <a class="button button-primary"
+                       href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_cta"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       data-track="play_store_click"
+                       data-source="pockee_landing"
+                       data-page="landing"
+                       data-position="hero_cta"
+                       data-i18n="primaryCta">
+                        Get Pockee on Google Play
+                    </a>
+                    <a class="button button-secondary" id="heroFxLink" href="./calculator/calculator.html?lang=en"
+                       data-track="fx_page_click"
+                       data-source="pockee_landing"
+                       data-page="landing"
+                       data-position="hero_fx"
+                       data-i18n="secondaryCta">
+                        Try the currency converter
+                    </a>
+                </div>
+                <div class="hero-points">
+                    <div class="hero-point"><span class="check">✓</span><span data-i18n="pointReceipt">Receipt photo &amp; card alerts</span></div>
+                    <div class="hero-point"><span class="check">✓</span><span data-i18n="pointAssets">Assets and net worth</span></div>
+                    <div class="hero-point"><span class="check">✓</span><span data-i18n="pointCar">Car log and fuel economy</span></div>
+                    <div class="hero-point"><span class="check">✓</span><span data-i18n="pointBudget">Budgets and recurring bills</span></div>
+                </div>
+            </div>
+
+            <a class="visual-card"
+               href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dhero_image_cta"
+               target="_blank"
+               rel="noopener noreferrer"
+               data-track="play_store_click"
+               data-source="pockee_landing"
+               data-page="landing"
+               data-position="hero_image_cta"
+               aria-label="Open Pockee on Google Play">
+                <img src="./assets/images/banner-bbol.webp"
+                     alt="Pockee app graphic"
+                     class="graphic-img"
+                     id="heroImage"
+                     width="1024"
+                     height="500"
+                     fetchpriority="high">
+            </a>
+        </section>
+
+        <div class="trust-strip" aria-label="Pockee highlights">
+            <div class="trust-item">
+                <div class="trust-value" data-i18n="trustValue1">OCR</div>
+                <div class="trust-label" data-i18n="trustLabel1">Receipt recognition</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-value" data-i18n="trustValue2">FX</div>
+                <div class="trust-label" data-i18n="trustLabel2">Multi-currency records</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-value" data-i18n="trustValue3">OFF</div>
+                <div class="trust-label" data-i18n="trustLabel3">Works offline</div>
+            </div>
+        </div>
+
+        <section id="features" aria-labelledby="featuresTitle">
+            <div class="section-head">
+                <div class="section-kicker" data-i18n="featuresKicker">Features</div>
+                <h2 class="section-title" id="featuresTitle" data-i18n="featuresTitle">
+                    More than a simple expense tracker.
+                </h2>
+                <p class="section-description" data-i18n="featuresDescription">
+                    Record faster, see every account in one place, and keep long-term payments under control.
+                </p>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">📷</div>
+                    <h3 class="feature-title" data-i18n="feature1Title">Snap it, get notified, done</h3>
+                    <p class="feature-description" data-i18n="feature1Desc">
+                        Log receipts with a single photo and card payments right from their notifications. Category suggestions get smarter the more you use Pockee.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title" data-i18n="feature2Title">All your money in one place</h3>
+                    <p class="feature-description" data-i18n="feature2Desc">
+                        Manage bank accounts, cards, stocks, real estate and loans together, and see how your net worth changes over time with charts.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">🚗</div>
+                    <h3 class="feature-title" data-i18n="feature3Title">Car costs in their own log</h3>
+                    <p class="feature-description" data-i18n="feature3Desc">
+                        Keep fuel and maintenance records together with your mileage, check your fuel economy and car expenses, and add upcoming maintenance dates.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title" data-i18n="feature4Title">How's this month going?</h3>
+                    <p class="feature-description" data-i18n="feature4Desc">
+                        See how much of your budget you've spent at a glance, and manage recurring bills like rent, phone and subscriptions.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3 class="feature-title" data-i18n="feature5Title">Installments and loans at a glance</h3>
+                    <p class="feature-description" data-i18n="feature5Desc">
+                        Check how many installments are left, and manage loan balance, interest rate, principal, interest and repayment history.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">🐱</div>
+                    <h3 class="feature-title" data-i18n="feature6Title">A budget app you'll want to open every day</h3>
+                    <p class="feature-description" data-i18n="feature6Desc">
+                        Cute Piggy and Bbol, daily mood notes, colorful themes and dark mode — make Pockee your own.
+                    </p>
+                </article>
+            </div>
+
+            <div class="extras">
+                <div class="extra-item">
+                    <span class="extra-icon" aria-hidden="true">🌍</span>
+                    <span class="extra-text" data-i18n="extra1">Multi-currency ledgers &amp; exchange rates</span>
+                </div>
+                <div class="extra-item">
+                    <span class="extra-icon" aria-hidden="true">📄</span>
+                    <span class="extra-text" data-i18n="extra2">Excel import in various formats</span>
+                </div>
+                <div class="extra-item">
+                    <span class="extra-icon" aria-hidden="true">☁️</span>
+                    <span class="extra-text" data-i18n="extra3">Google Drive backup</span>
+                </div>
+            </div>
+        </section>
+
+        <section aria-labelledby="flowTitle">
+            <div class="section-head">
+                <div class="section-kicker" data-i18n="flowKicker">How it works</div>
+                <h2 class="section-title" id="flowTitle" data-i18n="flowTitle">
+                    The more you use it, the easier it gets.
+                </h2>
+            </div>
+
+            <div class="flow">
+                <article class="flow-step">
+                    <div class="step-number">01</div>
+                    <h3 class="flow-title" data-i18n="flow1Title">Record it in seconds</h3>
+                    <p class="flow-description" data-i18n="flow1Desc">
+                        A photo for receipts, a notification for card payments. Categories are suggested to match the way you record.
+                    </p>
+                </article>
+
+                <article class="flow-step">
+                    <div class="step-number">02</div>
+                    <h3 class="flow-title" data-i18n="flow2Title">Connect your assets</h3>
+                    <p class="flow-description" data-i18n="flow2Desc">
+                        Bring accounts, cards, stocks, real estate and loans together and watch your net worth take shape.
+                    </p>
+                </article>
+
+                <article class="flow-step">
+                    <div class="step-number">03</div>
+                    <h3 class="flow-title" data-i18n="flow3Title">Check your money flow</h3>
+                    <p class="flow-description" data-i18n="flow3Desc">
+                        Budgets, recurring bills and charts show whether this month is going the way you planned.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <section aria-labelledby="fxTitle">
+            <div class="fx-banner">
+                <div>
+                    <h2 class="fx-title" id="fxTitle" data-i18n="fxTitle">
+                        Check exchange rates before recording overseas spending.
+                    </h2>
+                    <p class="fx-description" data-i18n="fxDescription">
+                        Pockee FX uses the same exchange-rate data prepared for Pockee's multi-currency features.
+                    </p>
+                </div>
+                <a class="button button-secondary" id="fxBannerLink" href="./calculator/calculator.html?lang=en"
+                   data-track="fx_page_click"
+                   data-source="pockee_landing"
+                   data-page="landing"
+                   data-position="banner_fx"
+                   data-i18n="fxCta">
+                    Open Pockee FX
+                </a>
+            </div>
+        </section>
+
+        <section class="final-cta" aria-labelledby="finalCtaTitle">
+            <h2 id="finalCtaTitle" data-i18n="finalTitle">
+                Start managing your money with Pockee.
+            </h2>
+            <p data-i18n="finalDescription">
+                From daily expenses to budgets, assets, net worth, car costs and overseas spending, keep your finances together in one app.
+            </p>
+            <div class="cta-row">
+                <a class="button button-primary"
+                   href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dfinal_cta"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   data-track="play_store_click"
+                   data-source="pockee_landing"
+                   data-page="landing"
+                   data-position="final_cta"
+                   data-i18n="primaryCta">
+                    Get Pockee on Google Play
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div>© 2026 JunCaffe. All rights reserved.</div>
+        <div class="footer-links">
+            <a href="./calculator/calculator.html?lang=en" id="footerFxLink"
+               data-track="fx_page_click"
+               data-source="pockee_landing"
+               data-page="landing"
+               data-position="footer_fx"
+               data-i18n="navFx">Currency Converter</a>
+            <a href="https://play.google.com/store/apps/details?id=com.juncaffe.pockee&referrer=utm_source%3Dpockee_landing%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page%26utm_content%3Dfooter_cta"
+               target="_blank"
+               rel="noopener noreferrer"
+               data-track="play_store_click"
+               data-source="pockee_landing"
+               data-page="landing"
+               data-position="footer_cta"
+               data-i18n="footerStore">Google Play</a>
+        </div>
+        <div class="footer-notice" data-i18n="analyticsNotice">
+            This site uses Google Analytics to understand page visits, Play Store link clicks, and currency-converter link clicks. No personally identifiable information is intentionally collected.
+        </div>
+        <div class="footer-legal">
+            <a href="./privacy/en.html" target="_blank" data-i18n="privacyLink">Privacy Policy</a>
+            <a href="./terms/en.html" target="_blank" data-i18n="termsLink">Terms of Service</a>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

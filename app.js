@@ -48,9 +48,8 @@ function updateTrackedLinks(lang) {
 }
 
 function pushTrackingEvent(eventName, params = {}) {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-        event: eventName,
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('event', eventName, {
         source: params.source || 'pockee_landing',
         page: params.page || 'landing',
         lang: params.lang || getCurrentLanguage(),

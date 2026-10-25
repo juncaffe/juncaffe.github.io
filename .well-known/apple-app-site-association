@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "5ZJW8KHV9J.com.juncaffe.pockee",
+          "5ZJW8KHV9J.com.juncaffe.pockee.debug"
+        ],
+        "components": [
+          { "/": "/join" },
+          { "/": "/join/" }
+        ]
+      }
+    ]
+  }
+}

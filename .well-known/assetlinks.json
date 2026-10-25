@@ -1,0 +1,18 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.juncaffe.pockee",
+      "sha256_cert_fingerprints": ["60:C1:88:08:50:7C:8D:CE:AD:65:23:11:D2:BA:F5:FC:99:A0:F8:42:47:A7:4A:21:A7:1A:FC:D2:FB:54:B7:5F"]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.juncaffe.pockee.debug",
+      "sha256_cert_fingerprints": ["26:99:B1:4F:8A:D4:87:7A:D4:3B:10:A5:11:CC:10:DB:92:EF:D8:DB:E4:E3:7B:46:D3:1B:5F:2A:FA:E9:35:37"]
+    }
+  }
+]

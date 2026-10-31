@@ -3,8 +3,8 @@
     "details": [
       {
         "appIDs": [
-          "5ZJW8KHV9J.com.juncaffe.pockee",
-          "5ZJW8KHV9J.com.juncaffe.pockee.debug"
+          "QS7CQZD386.com.juncaffe.pockee",
+          "QS7CQZD386.com.juncaffe.pockee.debug"
         ],
         "components": [
           { "/": "/join" },

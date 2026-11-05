@@ -6,7 +6,7 @@
     <title>Set up automatic payment entry - Pockee</title>
     <meta name="theme-color" content="#FFF9F0">
     <link rel="icon" type="image/webp" href="../assets/images/ic_launcher_512px.webp">
-    <!-- 앱이 ?lang=(ko 등) · ?os=26|27 · ?video · #message|#wallet|#notification 을 붙여 연다. video가 있으면 영상 영역으로 가서 해시 경로의 영상을 음소거 자동 재생한다. iOS 26의 Safari는 UA의 OS 버전을 고정하므로 OS는 감지하지 않는다. -->
+    <!-- 앱이 ?lang=(ko 등) · ?os=26|27 · ?video · #message|#wallet|#notification|#steps(1단계) 를 붙여 연다. video가 있으면 영상 영역으로 가서 해시 경로의 영상을 음소거 자동 재생한다. iOS 26의 Safari는 UA의 OS 버전을 고정하므로 OS는 감지하지 않는다. -->
     <style>
         :root { --primary: #9C5F2A; --bg: #FFF9F0; --surface: #fff; --text: #2E231B; --sub: #8A7B70; --border: #EADFD1; }
         * { box-sizing: border-box; }
@@ -73,7 +73,7 @@
         <div class="player" id="player"></div>
     </div>
 
-    <h2 id="s0h"></h2>
+    <h2 id="s0h" style="scroll-margin-top: 16px;"></h2>
     <div class="card"><p id="s0" style="color: var(--text); margin: 0;"></p></div>
 
     <h2 id="s1h"></h2>
@@ -685,6 +685,8 @@
 
     if (wantVideo) {
         document.getElementById('vidH').scrollIntoView();
+    } else if (route === 'steps') {
+        document.getElementById('s0h').scrollIntoView();
     } else if (route) {
         var target = document.querySelector('#os' + os + ' [data-route="' + route + '"]');
         if (target) target.scrollIntoView();

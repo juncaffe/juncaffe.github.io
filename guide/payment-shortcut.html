@@ -6,7 +6,7 @@
     <title>Set up automatic payment entry - Pockee</title>
     <meta name="theme-color" content="#FFF9F0">
     <link rel="icon" type="image/webp" href="../assets/images/ic_launcher_512px.webp">
-    <!-- 앱이 ?lang=(ko 등) · ?os=26|27 · #message|#wallet|#notification 을 붙여 연다. iOS 26의 Safari는 UA의 OS 버전을 고정하므로 OS는 감지하지 않는다. -->
+    <!-- 앱이 ?lang=(ko 등) · ?os=26|27 · ?video · #message|#wallet|#notification 을 붙여 연다. video가 있으면 영상 영역으로 가서 해시 경로의 영상을 음소거 자동 재생한다. iOS 26의 Safari는 UA의 OS 버전을 고정하므로 OS는 감지하지 않는다. -->
     <style>
         :root { --primary: #9C5F2A; --bg: #FFF9F0; --surface: #fff; --text: #2E231B; --sub: #8A7B70; --border: #EADFD1; }
         * { box-sizing: border-box; }
@@ -31,6 +31,9 @@
         .shots img.full { width: min(240px, 100%); }
         .shots img.crop { width: min(320px, 100%); }
         .note { font-size: 14px; }
+        .player { width: min(320px, 100%); aspect-ratio: 9 / 16; margin: 16px auto 0; border-radius: 14px; overflow: hidden; background: #F2F2F7; display: flex; align-items: center; justify-content: center; }
+        .player iframe { width: 100%; height: 100%; border: 0; }
+        .player p { padding: 0 16px; text-align: center; }
         ul.tr { margin: 0; padding-left: 20px; }
         ul.tr li { line-height: 1.6; margin: 0 0 10px; color: var(--text); }
         /* 넓은 화면: 단계를 가로로 나열해 캡처를 한눈에 본다 */
@@ -64,6 +67,12 @@
     </div>
     <p class="note" id="osHint"></p>
 
+    <h2 id="vidH" style="scroll-margin-top: 16px;"></h2>
+    <div class="card">
+        <div class="seg" role="group" id="vidTabs" style="margin-top: 0;"></div>
+        <div class="player" id="player"></div>
+    </div>
+
     <h2 id="s0h"></h2>
     <div class="card"><p id="s0" style="color: var(--text); margin: 0;"></p></div>
 
@@ -87,6 +96,7 @@
             s0: 'On Pockee\'s **Shortcut Setup** screen, tap **Get Shortcut** for the payment type you want. When the **Shortcuts** app opens, tap **Add Shortcut**.',
             s1h: 'Step 2. Turn on the automation',
             hMsg: 'Card payment texts', hWal: 'Apple Pay', hNoti: 'Payment notifications',
+            hVid: 'Video guide', vidSoon: 'This video is coming soon.',
             m26: [
                 'Open the **Shortcuts** app. The shortcut you added is in **Library**.',
                 'Tap **Automation** at the bottom, then **New Automation**. If you already have automations, tap **+** at the top right.',
@@ -136,6 +146,7 @@
             s0: 'Pockee의 **단축어 연결** 화면에서 원하는 결제 종류의 **단축어 받기**를 누르세요. **단축어** 앱이 열리면 **단축어 추가**를 누르세요.',
             s1h: '2단계. 자동화 켜기',
             hMsg: '카드 결제 문자', hWal: 'Apple Pay', hNoti: '결제 알림',
+            hVid: '가이드 영상', vidSoon: '영상을 준비 중이에요.',
             m26: [
                 '**단축어** 앱을 여세요. 추가한 단축어는 **보관함**에 있어요.',
                 '아래쪽 **자동화** 탭을 누르고 **새로운 자동화**를 누르세요. 이미 자동화가 있다면 오른쪽 위 **+**를 누르세요.',
@@ -185,6 +196,7 @@
             s0: 'Pockeeの **ショートカット連携** 画面で、使いたい決済の **ショートカットを入手** をタップします。**ショートカット** アプリが開いたら **ショートカットを追加** をタップします。',
             s1h: 'ステップ2. オートメーションをオン',
             hMsg: 'カード決済SMS', hWal: 'Apple Pay', hNoti: '決済通知',
+            hVid: 'ガイド動画', vidSoon: '動画は準備中です。',
             m26: [
                 '**ショートカット** アプリを開きます。追加したショートカットは **ライブラリ** にあります。',
                 '下の **オートメーション** タブで **新規オートメーション** をタップします。すでにオートメーションがある場合は右上の **+** をタップします。',
@@ -234,6 +246,7 @@
             s0: '在 Pockee 的 **快捷指令连接** 页面，轻点所需付款类型的 **获取快捷指令**。**快捷指令** App 打开后，轻点 **添加快捷指令**。',
             s1h: '第 2 步. 开启自动化',
             hMsg: '银行卡消费短信', hWal: 'Apple Pay', hNoti: '付款通知',
+            hVid: '视频教程', vidSoon: '视频正在准备中。',
             m26: [
                 '打开 **快捷指令** App。添加的快捷指令在 **资料库** 中。',
                 '轻点底部的 **自动化** 标签，再轻点 **新建自动化**。如果已有自动化，请轻点右上角的 **+**。',
@@ -283,6 +296,7 @@
             s0: '在 Pockee 的 **捷徑連結** 畫面，點一下所需付款類型的 **取得捷徑**。**捷徑** App 開啟後，點一下 **加入捷徑**。',
             s1h: '步驟 2. 開啟自動化',
             hMsg: '刷卡簡訊', hWal: 'Apple Pay', hNoti: '付款通知',
+            hVid: '影片教學', vidSoon: '影片準備中。',
             m26: [
                 '打開 **捷徑** App。加入的捷徑在 **資料庫** 中。',
                 '點一下底部的 **自動化** 標籤，再點一下 **新增自動化操作**。如果已有自動化，請點一下右上角的 **+**。',
@@ -332,6 +346,7 @@
             s0: 'Trên màn hình **Kết nối phím tắt** của Pockee, chạm **Tải phím tắt** ở loại thanh toán bạn muốn. Khi ứng dụng **Phím tắt** mở ra, chạm **Thêm phím tắt**.',
             s1h: 'Bước 2. Bật tự động hóa',
             hMsg: 'Tin nhắn thanh toán thẻ', hWal: 'Apple Pay', hNoti: 'Thông báo thanh toán',
+            hVid: 'Video hướng dẫn', vidSoon: 'Video đang được chuẩn bị.',
             m26: [
                 'Mở ứng dụng **Phím tắt**. Phím tắt đã thêm nằm trong **Thư viện**.',
                 'Chạm tab **Tự động hóa** ở dưới cùng, rồi chạm **Tự động hóa mới**. Nếu đã có tự động hóa, chạm **+** ở góc trên bên phải.',
@@ -381,6 +396,7 @@
             s0: 'Pada skrin **Shortcut Setup** dalam Pockee, ketik **Get Shortcut** untuk jenis pembayaran yang anda mahu. Apabila apl **Pintasan** dibuka, ketik **Tambah Pintasan**.',
             s1h: 'Langkah 2. Hidupkan automasi',
             hMsg: 'Teks pembayaran kad', hWal: 'Apple Pay', hNoti: 'Pemberitahuan pembayaran',
+            hVid: 'Video panduan', vidSoon: 'Video sedang disediakan.',
             m26: [
                 'Buka apl **Pintasan**. Pintasan yang ditambah ada dalam **Pustaka**.',
                 'Ketik tab **Automasi** di bawah, kemudian **Automasi Baharu**. Jika anda sudah ada automasi, ketik **+** di penjuru kanan atas.',
@@ -430,6 +446,7 @@
             s0: 'Pockee की **Shortcut Setup** स्क्रीन पर, जिस भुगतान प्रकार के लिए चाहिए उसके **Get Shortcut** पर टैप करें। **शॉर्टकट** ऐप खुलने पर **शॉर्टकट जोड़ें** पर टैप करें।',
             s1h: 'चरण 2. ऑटोमेशन चालू करें',
             hMsg: 'कार्ड भुगतान SMS', hWal: 'Apple Pay', hNoti: 'भुगतान सूचनाएँ',
+            hVid: 'वीडियो गाइड', vidSoon: 'यह वीडियो जल्द आएगा।',
             m26: [
                 '**शॉर्टकट** ऐप खोलें। जोड़ा गया शॉर्टकट **लाइब्रेरी** में है।',
                 'नीचे **ऑटोमेशन** टैब पर टैप करें, फिर **नया ऑटोमेशन** पर। अगर पहले से ऑटोमेशन हैं, तो ऊपर दाईं ओर **+** पर टैप करें।',
@@ -479,6 +496,7 @@
             s0: 'Di layar **Hubungkan Pintasan** Pockee, ketuk **Dapatkan Pintasan** untuk jenis pembayaran yang Anda inginkan. Saat app **Pintasan** terbuka, ketuk **Tambah Pintasan**.',
             s1h: 'Langkah 2. Nyalakan automasi',
             hMsg: 'SMS pembayaran kartu', hWal: 'Apple Pay', hNoti: 'Notifikasi pembayaran',
+            hVid: 'Video panduan', vidSoon: 'Video sedang disiapkan.',
             m26: [
                 'Buka app **Pintasan**. Pintasan yang ditambahkan ada di **Perpustakaan**.',
                 'Ketuk tab **Automasi** di bawah, lalu **Automasi Baru**. Jika sudah ada automasi, ketuk **+** di kanan atas.',
@@ -520,6 +538,20 @@
             done: 'Setelah pembayaran pertama masuk, layar **Hubungkan Pintasan** di Pockee menampilkan **Terhubung**.'
         }
     };
+    // 가이드 영상(YouTube ID). OS → 경로 → 언어. 없는 칸은 '준비 중'으로 보인다 — 올린 뒤 ID만 넣으면 앱 업데이트 없이 보인다.
+    var VIDEO = {
+        '26': {
+            message: { ko: '81xn1PKeKMk', en: 'o3I8uEaBtKo', ja: 'CCLCIRJTl2M', 'zh-cn': 'jYlrhNWIZGg', 'zh-tw': 'fDOjR7xNYxI', vi: '7ydY3vCddWM', id: 'Hlwi3v3ftX8' }
+        },
+        '27': {
+            notification: { ko: 'wfOFaAoKSLM', en: 'MN_g6x47rZY', ja: 'v0U0od1Roi8' }
+        }
+    };
+    // 영상을 만드는 언어. 그 밖의 언어(ms, hi)는 영어 영상을 쓴다.
+    var VIDEO_LANGS = ['ko', 'en', 'ja', 'zh-cn', 'zh-tw', 'vi', 'id'];
+    // OS마다 고를 수 있는 경로와 먼저 보일 경로. iOS 26은 알림 트리거가 없다.
+    var VID_ROUTES = { '26': ['message', 'wallet'], '27': ['message', 'notification', 'wallet'] };
+    var VID_DEFAULT = { '26': 'message', '27': 'notification' };
     // 단계마다 붙일 캡처. [파일명, 'full' | 'crop']
     var IMG = {
         m26: [[['01-library', 'full']], [['02-automation-tab', 'full']], [['03-triggers', 'full']],
@@ -551,6 +583,7 @@
     var lang = pick();
     var t = T[lang];
     var imgLang = lang === 'ko' ? 'ko' : 'en';
+    var vidLang = VIDEO_LANGS.indexOf(lang) >= 0 ? lang : 'en';
 
     // 번역문의 **굵게** 만 태그로 바꾼다. 나머지는 이스케이프한다.
     function rich(s) {
@@ -587,6 +620,7 @@
     setRich('btn26', t.os26);
     setRich('btn27', t.os27);
     setRich('osHint', t.osHint);
+    setRich('vidH', t.hVid);
     setRich('s0h', t.s0h);
     setRich('s0', t.s0);
     setRich('s1h', t.s1h);
@@ -607,21 +641,52 @@
         card('wallet', t.hWal, 'ios27', t.w27, IMG.w27) +
         card('add', t.hAdd, 'ios27', t.add27, IMG.add27);
 
-    function showOs(os) {
+    var ROUTE_TITLE = { message: t.hMsg, notification: t.hNoti, wallet: t.hWal };
+    var vidTabs = document.getElementById('vidTabs');
+    var vidOs = '26';
+    // 이 OS에 없는 경로면 OS 기본 영상. autoplay는 소리 없이 재생해야 iOS Safari가 막지 않는다(영상에 음성이 없다).
+    function playVideo(route, autoplay) {
+        if (VID_ROUTES[vidOs].indexOf(route) < 0) route = VID_DEFAULT[vidOs];
+        for (var i = 0; i < vidTabs.children.length; i++) {
+            vidTabs.children[i].setAttribute('aria-pressed', String(vidTabs.children[i].getAttribute('data-route') === route));
+        }
+        var id = (VIDEO[vidOs][route] || {})[vidLang];
+        document.getElementById('player').innerHTML = id
+            ? '<iframe title="' + rich(ROUTE_TITLE[route]) + '" src="https://www.youtube-nocookie.com/embed/' + id + '?playsinline=1&rel=0' +
+              (autoplay ? '&autoplay=1&mute=1' : '') + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'
+            : '<p>' + rich(t.vidSoon) + '</p>';
+    }
+    vidTabs.onclick = function (e) {
+        var b = e.target.closest('button');
+        if (b) playVideo(b.getAttribute('data-route'), true);
+    };
+
+    function showOs(os, route, autoplay) {
         document.getElementById('os26').hidden = os !== '26';
         document.getElementById('os27').hidden = os !== '27';
         document.getElementById('btn26').setAttribute('aria-pressed', String(os === '26'));
         document.getElementById('btn27').setAttribute('aria-pressed', String(os === '27'));
+        vidOs = os;
+        var tabs = '';
+        for (var i = 0; i < VID_ROUTES[os].length; i++) {
+            var r = VID_ROUTES[os][i];
+            tabs += '<button type="button" data-route="' + r + '">' + rich(ROUTE_TITLE[r]) + '</button>';
+        }
+        vidTabs.innerHTML = tabs;
+        playVideo(route, autoplay);
     }
     document.getElementById('btn26').onclick = function () { showOs('26'); };
     document.getElementById('btn27').onclick = function () { showOs('27'); };
     var osQ = /[?&]os=(\d+)/.exec(location.search);
     var os = osQ && parseInt(osQ[1], 10) >= 27 ? '27' : '26';
-    showOs(os);
+    var route = location.hash.replace('#', '').replace(/[^a-z]/g, '');
+    var wantVideo = /[?&]video(?:[=&]|$)/.test(location.search);
+    showOs(os, route, wantVideo);
 
-    var route = location.hash.replace('#', '');
-    if (route) {
-        var target = document.querySelector('#os' + os + ' [data-route="' + route.replace(/[^a-z]/g, '') + '"]');
+    if (wantVideo) {
+        document.getElementById('vidH').scrollIntoView();
+    } else if (route) {
+        var target = document.querySelector('#os' + os + ' [data-route="' + route + '"]');
         if (target) target.scrollIntoView();
     }
 })();

@@ -8,7 +8,7 @@
     <link rel="icon" type="image/webp" href="../assets/images/ic_launcher_512px.webp">
     <!-- 앱이 ?lang=(ko 등) · ?os=26|27 · ?video · #message|#wallet|#notification|#steps(=steps1)|#steps1|#steps2(단계 제목) 를 붙여 연다. video가 있으면 영상 영역으로 가서 해시 경로의 영상을 음소거 자동 재생한다. iOS 26의 Safari는 UA의 OS 버전을 고정하므로 OS는 감지하지 않는다. -->
     <style>
-        :root { --primary: #9C5F2A; --bg: #FFF9F0; --surface: #fff; --text: #2E231B; --sub: #8A7B70; --border: #EADFD1; }
+        :root { --primary: #9C5F2A; --bg: #FFF9F0; --surface: #fff; --text: #2E231B; --sub: #8A7B70; --border: #EADFD1; --mark: #D32F2F; }
         * { box-sizing: border-box; }
         body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; background: var(--bg); color: var(--text); }
         main { max-width: 560px; margin: 0 auto; padding: 40px 20px 64px; }
@@ -27,9 +27,23 @@
         ol > li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 26px; height: 26px; border-radius: 13px; background: var(--primary); color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
         li p { color: var(--text); margin: 2px 0 10px; }
         .shots { display: flex; flex-wrap: wrap; gap: 10px; }
-        .shots img { display: block; height: auto; border: 1px solid var(--border); border-radius: 14px; background: #F2F2F7; }
-        .shots img.full { width: min(240px, 100%); }
-        .shots img.crop { width: min(320px, 100%); }
+        .shot { position: relative; display: block; }
+        .shot.full { width: min(240px, 100%); }
+        .shot.crop { width: min(320px, 100%); }
+        .shots img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 14px; background: #F2F2F7; }
+        /* 캡처에서 입력하거나 선택할 곳의 테두리와 말풍선 */
+        .mk { position: absolute; border: 2.5px solid var(--mark); border-radius: 10px; box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .85); pointer-events: none; }
+        .bub { position: absolute; width: max-content; padding: 5px 9px; border-radius: 8px; background: var(--mark); color: #fff; font-size: 12px; font-weight: 600; line-height: 1.35; box-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
+        .bub b { color: #fff; }
+        .bub::after { content: ''; position: absolute; border: 6px solid transparent; }
+        .bub.below { margin-top: 8px; }
+        .bub.above { margin-bottom: 8px; }
+        .bub.below::after { bottom: 100%; border-top-width: 0; border-bottom-color: var(--mark); }
+        .bub.above::after { top: 100%; border-bottom-width: 0; border-top-color: var(--mark); }
+        .bub.c { transform: translateX(-50%); }
+        .bub.l::after { left: 14px; }
+        .bub.r::after { right: 14px; }
+        .bub.c::after { left: 50%; margin-left: -6px; }
         .note { font-size: 14px; }
         .player { width: min(320px, 100%); aspect-ratio: 9 / 16; margin: 16px auto 0; border-radius: 14px; overflow: hidden; background: #F2F2F7; display: flex; align-items: center; justify-content: center; }
         .player iframe { width: 100%; height: 100%; border: 0; }
@@ -49,7 +63,7 @@
             /* 단계가 하나뿐인 카드는 글과 캡처를 옆으로 둔다 */
             ol > li:only-child { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 280px); gap: 24px; }
             .shots { flex-direction: column; }
-            .shots img.full, .shots img.crop { width: 100%; max-width: 280px; }
+            .shot.full, .shot.crop { width: 100%; max-width: 280px; }
             ul.tr { columns: 2; column-gap: 48px; }
             ul.tr li { break-inside: avoid; }
         }
@@ -59,6 +73,7 @@
 <main>
     <h1 id="title"></h1>
     <p id="intro"></p>
+    <p id="intro2"></p>
 
     <h2 id="osQ"></h2>
     <div class="seg" role="group">
@@ -89,7 +104,8 @@
     var T = {
         en: {
             title: 'Set up automatic payment entry',
-            intro: 'iPhone doesn\'t let apps read other apps\' notifications or messages. With a Shortcuts automation, each payment is passed to Pockee and shows up in your pending list, ready to save.',
+            intro: 'iPhone doesn\'t let apps directly read notifications or messages from other apps. To pass your payments to Pockee, **you need to set up a Shortcuts automation.**',
+            intro2: 'Payments passed through the shortcut are **saved to Pockee\'s pending list automatically**, and you can easily add them as transactions from there.',
             osQ: 'Your iOS version', os26: 'iOS 26 or earlier', os27: 'iOS 27 or later',
             osHint: 'Not sure? Check **Settings > General > About**.',
             s0h: 'Step 1. Add the shortcut',
@@ -98,15 +114,40 @@
             hMsg: 'Card payment texts', hWal: 'Apple Pay', hNoti: 'Payment notifications',
             hVid: 'Video guide', vidSoon: 'This video is coming soon.',
             m26: [
-                'Open the **Shortcuts** app. The shortcut you added is in **Library**.',
-                'Tap **Automation** at the bottom, then **New Automation**. If you already have automations, tap **+** at the top right.',
+                'Find the shortcut you added in **Library** in the **Shortcuts** app.',
+                'In the **Automation** tab, tap **New Automation**. If you already have automations, tap **+** at the top right.',
                 'Scroll down and choose **Message**.',
-                'Leave **Sender** as **Any Sender**. Tap **Message Contains**, enter a word that every payment text from your card company includes (here: Approved), then tap **Done**.',
+                'In **Message Contains**, enter a word that every payment text includes. Leave **Sender** as it is.',
                 'Select **Run Immediately**, then tap **Next**.',
-                'Under **My Shortcuts**, choose **Pockee Payment SMS**.',
+                'Choose **Pockee Payment SMS**.',
                 'The automation is saved. From now on, card payment texts go to Pockee.'
             ],
             m26note: 'If your cards send texts with different wording, add one more automation with another word.',
+            bub: {
+                library: 'The shortcut you just added',
+                autoTab: '① Automation tab',
+                newAuto: '② New Automation',
+                message: 'Choose Message',
+                contains: 'Tap to open the input',
+                keyword: 'A word always included (e.g. Approved)',
+                done: 'Enter it, then tap Done',
+                runNow: '① Select Run Immediately',
+                next: '② Tap Next',
+                pick: 'Choose this shortcut',
+                wallet: 'Choose Wallet',
+                msgCheck: 'Check it says Message',
+                word: 'Enter a word (e.g. Approved)',
+                expand: 'Tap to expand',
+                setBoth: 'Set them like this',
+                appChip: 'Tap to choose an app',
+                appPick: 'Choose your card or bank app',
+                appAdd: 'Add more apps',
+                autoOn: 'Turn on Automation',
+                cardChip: 'Tap to choose cards',
+                trigMsg: 'Card payment texts',
+                trigWal: 'Apple Pay',
+                trigNoti: 'Payment notifications'
+            },
             w26: [
                 'In the **Automation** tab, tap **+** (or **New Automation**) and choose **Wallet**.',
                 'Choose the cards to use, select **Run Immediately**, and tap **Next**. **Notify When Run** can stay off.',
@@ -115,16 +156,16 @@
             n26: 'On iOS 26 and earlier, Shortcuts can\'t react to app notifications. Use card payment texts or Apple Pay instead, or update to iOS 27.',
             i27: 'On iOS 27, the automation is built into the shortcut. After adding it, open the shortcut in **Library** once and check the settings below.',
             m27: [
-                'If the box has a dashed border and asks you to configure it, make sure the first field is **Message**, not **Sender**. Then tap the light-blue field after **contains** and enter a word that every payment text includes (here: Approved).',
-                'Once the word is set, the notice disappears.',
-                'Make sure **Automation** is on and **Confirm Before Run** is off.'
+                'Make sure the first field is **Message**, then enter a word that every payment text includes in the field after **contains**.',
+                'When you\'re done, tap the arrow to expand it.',
+                'Turn **Automation** on and leave **Confirm Before Run** off.'
             ],
             n27: [
                 'Tap the light-blue **App** field.',
                 'Choose your card or bank app.',
-                'To add more apps, tap **+**. Make sure **Automation** is on. **Notify** can stay off.'
+                'To add more apps, tap **+**. Tap the arrow to expand, then turn on **Automation**. **Notify** can stay off.'
             ],
-            w27: ['**Any Card** is used by default. Tap it to pick specific cards only. Make sure **Automation** is on.'],
+            w27: ['**Any Card** is the default. Tap it to pick specific cards only. Tap the arrow to expand, then turn on **Automation**.'],
             hAdd: 'If the automation is missing',
             add27: ['Open the shortcut, tap the search field at the bottom, tap **Automation**, and choose **Message**, **Notification** or **Wallet**. Then set it up as above.'],
             hTr: 'Troubleshooting',
@@ -133,13 +174,14 @@
                 'It asks every time before running: select **Run Immediately** (iOS 26) or turn off **Confirm Before Run** (iOS 27).',
                 'The shortcut doesn\'t run or shows an error: open Pockee once, then try again.',
                 'Some Apple Pay payments are missing: the Wallet automation runs when you pay with your iPhone. Online payments and Apple Watch payments may not trigger it.',
-                'Every payment waits in Pockee\'s pending list, so you can check it before saving.'
+                'Every payment waits in Pockee\'s pending list, so you can check it and add it as a transaction.'
             ],
             done: 'When the first payment arrives, Pockee\'s **Shortcut Setup** screen shows **Connected**.'
         },
         ko: {
             title: '결제 자동 등록 설정',
-            intro: 'iPhone은 앱이 다른 앱의 알림이나 문자를 읽을 수 없어요. 단축어 자동화를 켜 두면 결제할 때마다 Pockee로 전달되고, 대기 목록에 들어와 바로 저장할 수 있어요.',
+            intro: 'iPhone에서는 다른 앱의 알림이나 문자 메시지를 직접 읽을 수 없어요. 결제 내역을 Pockee로 전달하려면 **단축어 자동화 설정이 필요해요.**',
+            intro2: '단축어를 통해 전달된 결제 내역은 Pockee의 **대기 목록에 자동으로 저장**되며, 대기 목록에서 간편하게 거래로 등록할 수 있어요.',
             osQ: '사용 중인 iOS 버전', os26: 'iOS 26 이하', os27: 'iOS 27 이상',
             osHint: '잘 모르겠다면 **설정 > 일반 > 정보**에서 확인하세요.',
             s0h: '1단계. 단축어 추가',
@@ -148,48 +190,74 @@
             hMsg: '카드 결제 문자', hWal: 'Apple Pay', hNoti: '결제 알림',
             hVid: '가이드 영상', vidSoon: '영상을 준비 중이에요.',
             m26: [
-                '**단축어** 앱을 여세요. 추가한 단축어는 **보관함**에 있어요.',
-                '아래쪽 **자동화** 탭을 누르고 **새로운 자동화**를 누르세요. 이미 자동화가 있다면 오른쪽 위 **+**를 누르세요.',
-                '아래로 내려 **메시지**를 고르세요.',
-                '**보낸 사람**은 **보낸 사람 중 아무나** 그대로 두세요. **메시지 포함 내용**을 눌러 카드사 결제 문자에 늘 들어가는 단어(예: 승인)를 입력하고 **완료**를 누르세요.',
-                '**즉시 실행**을 고르고 **다음**을 누르세요.',
-                '**나의 단축어**에서 **Pockee Payment SMS**를 고르세요.',
+                '**단축어** 앱의 **보관함**에서 추가한 단축어를 확인하세요.',
+                '**자동화** 탭에서 **새로운 자동화**를 누르세요. 이미 자동화가 있다면 오른쪽 위 **+**를 누르세요.',
+                '아래로 내려 **메시지**를 선택하세요.',
+                '**메시지 포함 내용**에 결제 문자에 늘 들어가는 단어를 입력하세요. **보낸 사람**은 그대로 두세요.',
+                '**즉시 실행**을 선택하고 **다음**을 누르세요.',
+                '**Pockee Payment SMS**를 선택하세요.',
                 '자동화가 저장됐어요. 이제 카드 결제 문자가 Pockee로 전달돼요.'
             ],
             m26note: '카드마다 문자 문구가 다르면 다른 단어로 자동화를 하나 더 만드세요.',
+            bub: {
+                library: '방금 추가한 단축어예요',
+                autoTab: '① 자동화 탭',
+                newAuto: '② 새로운 자동화',
+                message: '메시지를 선택하세요',
+                contains: '눌러서 입력 창을 여세요',
+                keyword: '늘 들어가는 단어(예: 승인)',
+                done: '입력 후 완료를 누르세요',
+                runNow: '① 즉시 실행을 선택하세요',
+                next: '② 다음을 누르세요',
+                pick: '이 단축어를 선택하세요',
+                wallet: '지갑을 선택하세요',
+                msgCheck: '메시지 확인',
+                word: '단어 입력(예: 승인)',
+                expand: '눌러서 펼치세요',
+                setBoth: '이렇게 설정하세요',
+                appChip: '눌러서 앱 선택',
+                appPick: '쓰는 카드사·은행 앱 선택',
+                appAdd: '앱 더 넣기',
+                autoOn: '자동화 켜기',
+                cardChip: '눌러서 카드 선택',
+                trigMsg: '카드 결제 문자',
+                trigWal: 'Apple Pay',
+                trigNoti: '결제 알림'
+            },
             w26: [
-                '**자동화** 탭에서 **+**(또는 **새로운 자동화**)를 누르고 **지갑**을 고르세요.',
-                '쓸 카드를 고르고 **즉시 실행**을 고른 뒤 **다음**을 누르세요. **실행되면 알리기**는 꺼 둬도 돼요.',
-                '**Pockee Apple Pay**를 고르세요.'
+                '**자동화** 탭에서 **+**(또는 **새로운 자동화**)를 누르고 **지갑**을 선택하세요.',
+                '쓸 카드와 **즉시 실행**을 선택한 뒤 **다음**을 누르세요. **실행되면 알리기**는 꺼 둬도 돼요.',
+                '**Pockee Apple Pay**를 선택하세요.'
             ],
             n26: 'iOS 26 이하에서는 단축어가 앱 알림에 반응하지 못해요. 카드 결제 문자나 Apple Pay를 쓰거나 iOS 27로 업데이트하세요.',
             i27: 'iOS 27에서는 자동화가 단축어 안에 들어 있어요. 추가한 뒤 **보관함**에서 단축어를 한 번 열어 아래 설정을 확인하세요.',
             m27: [
-                '상자가 점선이고 구성하라는 안내가 보이면 첫 칸이 **보낸 사람**이 아니라 **메시지**인지 확인하세요. 그다음 **다음을 포함** 뒤의 하늘색 칸을 눌러 결제 문자에 늘 들어가는 단어(예: 승인)를 입력하세요.',
-                '단어를 넣으면 안내가 사라져요.',
-                '**자동화**가 켜져 있고 **실행 전에 확인**이 꺼져 있는지 확인하세요.'
+                '첫 칸이 **메시지**인지 확인하고, **다음을 포함** 뒤 칸에 결제 문자에 늘 들어가는 단어를 입력하세요.',
+                '입력을 마치면 화살표를 눌러 펼치세요.',
+                '**자동화**는 켜고, **실행 전에 확인**은 꺼 두세요.'
             ],
             n27: [
                 '하늘색 **앱** 칸을 누르세요.',
-                '쓰는 카드사나 은행 앱을 고르세요.',
-                '앱을 더 넣으려면 **+**를 누르세요. **자동화**가 켜져 있는지 확인하세요. **알리기**는 꺼 둬도 돼요.'
+                '쓰는 카드사나 은행 앱을 선택하세요.',
+                '앱을 더 넣으려면 **+**를 누르세요. 화살표를 눌러 펼친 뒤 **자동화**를 켜세요. **알리기**는 꺼 둬도 돼요.'
             ],
-            w27: ['기본값은 **모든 카드**예요. 눌러서 특정 카드만 고를 수도 있어요. **자동화**가 켜져 있는지 확인하세요.'],
+            w27: ['기본값은 **모든 카드**예요. 눌러서 특정 카드만 선택할 수도 있어요. 화살표를 눌러 펼친 뒤 **자동화**를 켜세요.'],
             hAdd: '자동화가 없다면',
-            add27: ['단축어를 열고 아래 검색 칸을 눌러 **자동화**를 누른 뒤 **메시지**, **알림**, **지갑** 중 하나를 고르세요. 그다음 위와 같이 설정하세요.'],
+            add27: ['단축어를 열고 아래 검색 칸을 눌러 **자동화**를 누른 뒤 **메시지**, **알림**, **지갑** 중 하나를 선택하세요. 그다음 위와 같이 설정하세요.'],
             hTr: '잘 안 될 때',
             tr: [
                 '결제가 들어오지 않아요: 자동화가 켜져 있는지 확인하세요. iOS 26은 **즉시 실행**, iOS 27은 **자동화**예요.',
-                '실행할 때마다 물어봐요: **즉시 실행**을 고르거나(iOS 26) **실행 전에 확인**을 끄세요(iOS 27).',
+                '실행할 때마다 물어봐요: **즉시 실행**을 선택하거나(iOS 26) **실행 전에 확인**을 끄세요(iOS 27).',
                 '단축어가 실행되지 않거나 오류가 나요: Pockee를 한 번 연 뒤 다시 해 보세요.',
                 'Apple Pay 결제가 일부 빠져요: 지갑 자동화는 iPhone으로 결제할 때 실행돼요. 온라인 결제나 Apple Watch 결제는 실행되지 않을 수 있어요.',
-                '들어온 결제는 모두 Pockee 대기 목록에서 확인한 뒤 저장할 수 있어요.'
+                '들어온 결제는 모두 Pockee 대기 목록에서 확인한 뒤 거래로 등록할 수 있어요.'
             ],
             done: '첫 결제가 들어오면 Pockee **단축어 연결** 화면에 **연결됨**이 표시돼요.'
         },
         ja: {
             title: '決済の自動登録を設定',
-            intro: 'iPhoneでは、アプリがほかのアプリの通知やメッセージを読むことができません。ショートカットのオートメーションをオンにすると、決済のたびにPockeeへ送られ、保留リストからすぐに保存できます。',
+            intro: 'iPhoneでは、ほかのアプリの通知やメッセージを直接読み取ることができません。決済内容をPockeeに送るには、**ショートカットのオートメーション設定が必要です。**',
+            intro2: 'ショートカットから送られた決済内容はPockeeの**保留リストに自動で保存**され、保留リストから簡単に取引として登録できます。',
             osQ: 'お使いのiOSバージョン', os26: 'iOS 26以前', os27: 'iOS 27以降',
             osHint: 'わからない場合は **設定 > 一般 > 情報** で確認できます。',
             s0h: 'ステップ1. ショートカットを追加',
@@ -198,15 +266,40 @@
             hMsg: 'カード決済SMS', hWal: 'Apple Pay', hNoti: '決済通知',
             hVid: 'ガイド動画', vidSoon: '動画は準備中です。',
             m26: [
-                '**ショートカット** アプリを開きます。追加したショートカットは **ライブラリ** にあります。',
-                '下の **オートメーション** タブで **新規オートメーション** をタップします。すでにオートメーションがある場合は右上の **+** をタップします。',
+                '**ショートカット** アプリの **ライブラリ** で、追加したショートカットを確認します。',
+                '**オートメーション** タブで **新規オートメーション** をタップします。すでにオートメーションがある場合は右上の **+** をタップします。',
                 '下にスクロールして **メッセージ** を選びます。',
-                '**差出人** は **任意の差出人** のままにします。**メッセージが次を含む** をタップし、カード会社の決済メッセージに必ず含まれる語(画面の例: Approved)を入力して **完了** をタップします。',
+                '**メッセージが次を含む** に、決済メッセージに必ず含まれる語を入力します。**差出人** はそのままにします。',
                 '**すぐに実行** を選び、**次へ** をタップします。',
-                '**マイショートカット** から **Pockee Payment SMS** を選びます。',
+                '**Pockee Payment SMS** を選びます。',
                 'オートメーションが保存されました。これでカード決済のメッセージがPockeeに届きます。'
             ],
             m26note: 'カードによって文面が違う場合は、別の語でオートメーションをもう1つ作成してください。',
+            bub: {
+                library: '追加したショートカット',
+                autoTab: '① オートメーションタブ',
+                newAuto: '② 新規オートメーション',
+                message: 'メッセージを選択',
+                contains: 'タップして入力欄を開く',
+                keyword: '必ず含まれる語(例: Approved)',
+                done: '入力後、完了をタップ',
+                runNow: '① すぐに実行を選択',
+                next: '② 次へをタップ',
+                pick: 'このショートカットを選択',
+                wallet: 'ウォレットを選択',
+                msgCheck: 'メッセージを確認',
+                word: '語を入力(例: Approved)',
+                expand: 'タップして展開',
+                setBoth: 'このように設定',
+                appChip: 'タップしてアプリを選択',
+                appPick: 'カード会社・銀行アプリを選択',
+                appAdd: 'アプリを追加',
+                autoOn: 'オートメーションをオン',
+                cardChip: 'タップしてカードを選択',
+                trigMsg: 'カード決済SMS',
+                trigWal: 'Apple Pay',
+                trigNoti: '決済通知'
+            },
             w26: [
                 '**オートメーション** タブで **+**(または **新規オートメーション**)をタップし、**ウォレット** を選びます。',
                 '使うカードを選び、**すぐに実行** を選んで **次へ** をタップします。**実行時に通知** はオフのままで構いません。',
@@ -215,16 +308,16 @@
             n26: 'iOS 26以前では、ショートカットはアプリの通知に反応できません。カード決済SMSかApple Payを使うか、iOS 27にアップデートしてください。',
             i27: 'iOS 27では、オートメーションがショートカットに含まれています。追加したら **ライブラリ** でショートカットを一度開き、下の設定を確認してください。',
             m27: [
-                '枠が点線で設定を求める案内が出ている場合は、最初の項目が **差出人** ではなく **メッセージ** になっているか確認します。次に **次を含む** の後ろの水色の欄をタップし、決済メッセージに必ず含まれる語(画面の例: Approved)を入力します。',
-                '語を入れると案内が消えます。',
-                '**オートメーション** がオン、**実行前に確認** がオフになっているか確認します。'
+                '最初の項目が **メッセージ** になっているか確認し、**次を含む** の後ろの欄に決済メッセージに必ず含まれる語を入力します。',
+                '入力したら、矢印をタップして展開します。',
+                '**オートメーション** はオンにし、**実行前に確認** はオフにします。'
             ],
             n27: [
                 '水色のアプリ欄をタップします。',
                 '使っているカード会社や銀行のアプリを選びます。',
-                'アプリを追加するには **+** をタップします。**オートメーション** がオンか確認します。**通知** はオフのままで構いません。'
+                'アプリを追加するには **+** をタップします。矢印をタップして展開し、**オートメーション** をオンにします。**通知** はオフのままで構いません。'
             ],
-            w27: ['初期設定は **任意のカード** です。タップして特定のカードだけを選ぶこともできます。**オートメーション** がオンか確認します。'],
+            w27: ['初期設定は **任意のカード** です。タップして特定のカードだけを選ぶこともできます。矢印をタップして展開し、**オートメーション** をオンにします。'],
             hAdd: 'オートメーションがない場合',
             add27: ['ショートカットを開き、下の検索欄をタップして **オートメーション** をタップし、**メッセージ**、**通知**、**ウォレット** のいずれかを選びます。そのあと上と同じように設定します。'],
             hTr: 'うまくいかないとき',
@@ -233,13 +326,14 @@
                 '実行のたびに確認される: **すぐに実行** を選ぶ(iOS 26)か、**実行前に確認** をオフにします(iOS 27)。',
                 'ショートカットが動かない・エラーが出る: Pockeeを一度開いてから、もう一度試してください。',
                 'Apple Payの決済が一部届かない: ウォレットのオートメーションはiPhoneで支払ったときに実行されます。オンライン決済やApple Watchでの支払いでは実行されないことがあります。',
-                '届いた決済はすべてPockeeの保留リストで確認してから保存できます。'
+                '届いた決済はすべてPockeeの保留リストで確認してから、取引として登録できます。'
             ],
             done: '最初の決済が届くと、Pockeeの **ショートカット連携** 画面に **連携済み** と表示されます。'
         },
         'zh-cn': {
             title: '设置付款自动记录',
-            intro: 'iPhone 不允许 App 读取其他 App 的通知或信息。开启快捷指令自动化后，每笔付款都会传给 Pockee，出现在待处理列表中，随时可以保存。',
+            intro: 'iPhone 无法直接读取其他 App 的通知或信息。要把付款记录传给 Pockee，**需要设置快捷指令自动化。**',
+            intro2: '通过快捷指令传来的付款记录会**自动保存到 Pockee 的待处理列表**，你可以在列表中轻松记为交易。',
             osQ: '你的 iOS 版本', os26: 'iOS 26 及更早版本', os27: 'iOS 27 及更高版本',
             osHint: '不确定的话，可在 **设置 > 通用 > 关于本机** 中查看。',
             s0h: '第 1 步. 添加快捷指令',
@@ -248,15 +342,40 @@
             hMsg: '银行卡消费短信', hWal: 'Apple Pay', hNoti: '付款通知',
             hVid: '视频教程', vidSoon: '视频正在准备中。',
             m26: [
-                '打开 **快捷指令** App。添加的快捷指令在 **资料库** 中。',
-                '轻点底部的 **自动化** 标签，再轻点 **新建自动化**。如果已有自动化，请轻点右上角的 **+**。',
+                '在 **快捷指令** App 的 **资料库** 中确认添加的快捷指令。',
+                '在 **自动化** 标签中轻点 **新建自动化**。如果已有自动化，请轻点右上角的 **+**。',
                 '向下滚动，选择 **信息**。',
-                '**发件人** 保持 **任何发件人**。轻点 **信息包含**，输入银行消费短信中一定会出现的词(图中示例: Approved)，然后轻点 **完成**。',
+                '在 **信息包含** 中输入付款短信里一定会出现的词。**发件人** 保持不变。',
                 '选择 **立即运行**，然后轻点 **下一步**。',
-                '在 **我的快捷指令** 中选择 **Pockee Payment SMS**。',
+                '选择 **Pockee Payment SMS**。',
                 '自动化已存储。之后银行卡消费短信都会传给 Pockee。'
             ],
             m26note: '如果不同银行卡的短信措辞不同，请用另一个词再建一个自动化。',
+            bub: {
+                library: '刚添加的快捷指令',
+                autoTab: '① 自动化标签',
+                newAuto: '② 新建自动化',
+                message: '选择信息',
+                contains: '轻点打开输入框',
+                keyword: '一定会出现的词(例: Approved)',
+                done: '输入后轻点完成',
+                runNow: '① 选择立即运行',
+                next: '② 轻点下一步',
+                pick: '选择这个快捷指令',
+                wallet: '选择钱包',
+                msgCheck: '确认是信息',
+                word: '输入词语(例: Approved)',
+                expand: '轻点展开',
+                setBoth: '按此设置',
+                appChip: '轻点选择 App',
+                appPick: '选择银行卡或银行 App',
+                appAdd: '添加更多 App',
+                autoOn: '开启自动化',
+                cardChip: '轻点选择卡片',
+                trigMsg: '银行卡消费短信',
+                trigWal: 'Apple Pay',
+                trigNoti: '付款通知'
+            },
             w26: [
                 '在 **自动化** 标签中轻点 **+**(或 **新建自动化**)，选择 **钱包**。',
                 '选择要使用的卡片，选择 **立即运行**，然后轻点 **下一步**。**运行时通知** 可以保持关闭。',
@@ -265,16 +384,16 @@
             n26: '在 iOS 26 及更早版本中，快捷指令无法响应 App 通知。请改用银行卡消费短信或 Apple Pay，或更新到 iOS 27。',
             i27: '在 iOS 27 中，自动化已包含在快捷指令里。添加后，请在 **资料库** 中打开一次该快捷指令，确认下面的设置。',
             m27: [
-                '如果方框是虚线并提示需要配置，请确认第一项是 **信息** 而不是 **发件人**。然后轻点 **包含** 后面的浅蓝色栏，输入付款短信中一定会出现的词(图中示例: Approved)。',
-                '输入词语后，提示就会消失。',
-                '确认 **自动化** 已开启，**运行前确认** 已关闭。'
+                '确认第一项是 **信息**，然后在 **包含** 后面的栏中输入付款短信里一定会出现的词。',
+                '输入完成后，轻点箭头展开。',
+                '开启 **自动化**，关闭 **运行前确认**。'
             ],
             n27: [
                 '轻点浅蓝色的 App 栏。',
                 '选择你使用的银行卡或银行 App。',
-                '要添加更多 App，请轻点 **+**。确认 **自动化** 已开启。**通知** 可以保持关闭。'
+                '要添加更多 App，请轻点 **+**。轻点箭头展开后开启 **自动化**。**通知** 可以保持关闭。'
             ],
-            w27: ['默认是 **任一卡片**。轻点可以只选择特定卡片。确认 **自动化** 已开启。'],
+            w27: ['默认是 **任一卡片**。轻点可以只选择特定卡片。轻点箭头展开后开启 **自动化**。'],
             hAdd: '如果没有自动化',
             add27: ['打开快捷指令，轻点底部的搜索栏，轻点 **自动化**，然后选择 **信息**、**通知** 或 **钱包**。之后按上面的方法设置。'],
             hTr: '遇到问题时',
@@ -283,13 +402,14 @@
                 '每次运行前都要确认: 选择 **立即运行**(iOS 26)，或关闭 **运行前确认**(iOS 27)。',
                 '快捷指令无法运行或出错: 先打开一次 Pockee，再试一次。',
                 '部分 Apple Pay 付款没有记录: 钱包自动化在用 iPhone 付款时运行。网上付款和 Apple Watch 付款可能不会触发。',
-                '传过来的付款都会先进入 Pockee 的待处理列表，确认后再保存。'
+                '传过来的付款都可以在 Pockee 的待处理列表中确认，然后记为交易。'
             ],
             done: '收到第一笔付款后，Pockee 的 **快捷指令连接** 页面会显示 **已连接**。'
         },
         'zh-tw': {
             title: '設定付款自動記錄',
-            intro: 'iPhone 不允許 App 讀取其他 App 的通知或訊息。開啟捷徑自動化後，每筆付款都會傳給 Pockee，出現在待處理清單中，隨時可以儲存。',
+            intro: 'iPhone 無法直接讀取其他 App 的通知或訊息。要把付款記錄傳給 Pockee，**需要設定捷徑自動化。**',
+            intro2: '透過捷徑傳來的付款記錄會**自動儲存到 Pockee 的待處理清單**，你可以在清單中輕鬆記為交易。',
             osQ: '你的 iOS 版本', os26: 'iOS 26 及更早版本', os27: 'iOS 27 及更新版本',
             osHint: '不確定的話，可在 **設定 > 一般 > 關於本機** 中查看。',
             s0h: '步驟 1. 加入捷徑',
@@ -298,15 +418,40 @@
             hMsg: '刷卡簡訊', hWal: 'Apple Pay', hNoti: '付款通知',
             hVid: '影片教學', vidSoon: '影片準備中。',
             m26: [
-                '打開 **捷徑** App。加入的捷徑在 **資料庫** 中。',
-                '點一下底部的 **自動化** 標籤，再點一下 **新增自動化操作**。如果已有自動化，請點一下右上角的 **+**。',
+                '在 **捷徑** App 的 **資料庫** 中確認加入的捷徑。',
+                '在 **自動化** 標籤中點一下 **新增自動化操作**。如果已有自動化，請點一下右上角的 **+**。',
                 '向下捲動，選擇 **訊息**。',
-                '**寄件人** 保持 **任何寄件人**。點一下 **訊息包含**，輸入發卡銀行刷卡簡訊中一定會出現的詞(圖中範例: Approved)，然後點一下 **完成**。',
+                '在 **訊息包含** 中輸入付款簡訊裡一定會出現的詞。**寄件人** 保持不變。',
                 '選擇 **立即執行**，然後點一下 **下一步**。',
-                '在 **我的捷徑** 中選擇 **Pockee Payment SMS**。',
+                '選擇 **Pockee Payment SMS**。',
                 '自動化已儲存。之後刷卡簡訊都會傳給 Pockee。'
             ],
             m26note: '如果不同卡片的簡訊用詞不同，請用另一個詞再建立一個自動化。',
+            bub: {
+                library: '剛加入的捷徑',
+                autoTab: '① 自動化標籤',
+                newAuto: '② 新增自動化操作',
+                message: '選擇訊息',
+                contains: '點一下開啟輸入框',
+                keyword: '一定會出現的詞(例: Approved)',
+                done: '輸入後點一下完成',
+                runNow: '① 選擇立即執行',
+                next: '② 點一下下一步',
+                pick: '選擇這個捷徑',
+                wallet: '選擇錢包',
+                msgCheck: '確認是訊息',
+                word: '輸入詞語(例: Approved)',
+                expand: '點一下展開',
+                setBoth: '請這樣設定',
+                appChip: '點一下選擇 App',
+                appPick: '選擇發卡銀行或銀行 App',
+                appAdd: '加入更多 App',
+                autoOn: '開啟自動化操作',
+                cardChip: '點一下選擇卡片',
+                trigMsg: '刷卡簡訊',
+                trigWal: 'Apple Pay',
+                trigNoti: '付款通知'
+            },
             w26: [
                 '在 **自動化** 標籤中點一下 **+**(或 **新增自動化操作**)，選擇 **錢包**。',
                 '選擇要使用的卡片，選擇 **立即執行**，然後點一下 **下一步**。**執行時通知** 可以保持關閉。',
@@ -315,16 +460,16 @@
             n26: '在 iOS 26 及更早版本中，捷徑無法回應 App 通知。請改用刷卡簡訊或 Apple Pay，或更新到 iOS 27。',
             i27: '在 iOS 27 中，自動化已包含在捷徑裡。加入後，請在 **資料庫** 中打開一次該捷徑，確認下面的設定。',
             m27: [
-                '如果方框是虛線並提示需要設定，請確認第一項是 **訊息** 而不是 **寄件人**。然後點一下 **包含** 後面的淺藍色欄位，輸入付款簡訊中一定會出現的詞(圖中範例: Approved)。',
-                '輸入詞語後，提示就會消失。',
-                '確認 **自動化操作** 已開啟，**執行前確認** 已關閉。'
+                '確認第一項是 **訊息**，然後在 **包含** 後面的欄位中輸入付款簡訊裡一定會出現的詞。',
+                '輸入完成後，點一下箭頭展開。',
+                '開啟 **自動化操作**，關閉 **執行前確認**。'
             ],
             n27: [
                 '點一下淺藍色的 App 欄位。',
                 '選擇你使用的發卡銀行或銀行 App。',
-                '要加入更多 App，請點一下 **+**。確認 **自動化操作** 已開啟。**通知** 可以保持關閉。'
+                '要加入更多 App，請點一下 **+**。點一下箭頭展開後開啟 **自動化操作**。**通知** 可以保持關閉。'
             ],
-            w27: ['預設是 **任何卡片**。點一下可以只選擇特定卡片。確認 **自動化操作** 已開啟。'],
+            w27: ['預設是 **任何卡片**。點一下可以只選擇特定卡片。點一下箭頭展開後開啟 **自動化操作**。'],
             hAdd: '如果沒有自動化',
             add27: ['打開捷徑，點一下底部的搜尋欄，點一下 **自動化**，然後選擇 **訊息**、**通知** 或 **錢包**。之後按上面的方法設定。'],
             hTr: '遇到問題時',
@@ -333,13 +478,14 @@
                 '每次執行前都要確認: 選擇 **立即執行**(iOS 26)，或關閉 **執行前確認**(iOS 27)。',
                 '捷徑無法執行或出錯: 先打開一次 Pockee，再試一次。',
                 '部分 Apple Pay 付款沒有記錄: 錢包自動化在用 iPhone 付款時執行。網路付款和 Apple Watch 付款可能不會觸發。',
-                '傳過來的付款都會先進入 Pockee 的待處理清單，確認後再儲存。'
+                '傳過來的付款都可以在 Pockee 的待處理清單中確認，然後記為交易。'
             ],
             done: '收到第一筆付款後，Pockee 的 **捷徑連結** 畫面會顯示 **已連結**。'
         },
         vi: {
             title: 'Thiết lập tự động ghi thanh toán',
-            intro: 'iPhone không cho ứng dụng đọc thông báo hay tin nhắn của ứng dụng khác. Khi bật tự động hóa trong Phím tắt, mỗi khoản thanh toán sẽ được gửi đến Pockee và xuất hiện trong danh sách chờ để bạn lưu ngay.',
+            intro: 'iPhone không thể đọc trực tiếp thông báo hay tin nhắn của ứng dụng khác. Để chuyển thông tin thanh toán đến Pockee, **bạn cần thiết lập tự động hóa trong Phím tắt.**',
+            intro2: 'Thông tin thanh toán được chuyển qua phím tắt sẽ **tự động lưu vào danh sách chờ** của Pockee, và bạn có thể dễ dàng ghi thành giao dịch từ đó.',
             osQ: 'Phiên bản iOS của bạn', os26: 'iOS 26 trở xuống', os27: 'iOS 27 trở lên',
             osHint: 'Nếu chưa rõ, hãy xem trong **Cài đặt > Cài đặt chung > Giới thiệu**.',
             s0h: 'Bước 1. Thêm phím tắt',
@@ -348,15 +494,40 @@
             hMsg: 'Tin nhắn thanh toán thẻ', hWal: 'Apple Pay', hNoti: 'Thông báo thanh toán',
             hVid: 'Video hướng dẫn', vidSoon: 'Video đang được chuẩn bị.',
             m26: [
-                'Mở ứng dụng **Phím tắt**. Phím tắt đã thêm nằm trong **Thư viện**.',
-                'Chạm tab **Tự động hóa** ở dưới cùng, rồi chạm **Tự động hóa mới**. Nếu đã có tự động hóa, chạm **+** ở góc trên bên phải.',
+                'Trong ứng dụng **Phím tắt**, kiểm tra phím tắt đã thêm ở **Thư viện**.',
+                'Trong tab **Tự động hóa**, chạm **Tự động hóa mới**. Nếu đã có tự động hóa, chạm **+** ở góc trên bên phải.',
                 'Cuộn xuống và chọn **Tin nhắn**.',
-                'Giữ **Người gửi** là **Bất kỳ người gửi nào**. Chạm **Tin nhắn chứa**, nhập một từ luôn có trong tin nhắn thanh toán của ngân hàng (ví dụ trong hình: Approved), rồi chạm **Xong**.',
+                'Ở **Tin nhắn chứa**, nhập một từ luôn có trong tin nhắn thanh toán. Giữ nguyên **Người gửi**.',
                 'Chọn **Chạy ngay lập tức**, rồi chạm **Tiếp**.',
-                'Trong **Phím tắt của tôi**, chọn **Pockee Payment SMS**.',
+                'Chọn **Pockee Payment SMS**.',
                 'Tự động hóa đã được lưu. Từ giờ tin nhắn thanh toán thẻ sẽ được gửi đến Pockee.'
             ],
             m26note: 'Nếu mỗi thẻ gửi tin nhắn với nội dung khác nhau, hãy tạo thêm một tự động hóa với từ khác.',
+            bub: {
+                library: 'Phím tắt bạn vừa thêm',
+                autoTab: '① Tab Tự động hóa',
+                newAuto: '② Tự động hóa mới',
+                message: 'Chọn Tin nhắn',
+                contains: 'Chạm để mở ô nhập',
+                keyword: 'Từ luôn có (ví dụ: Approved)',
+                done: 'Nhập xong, chạm Xong',
+                runNow: '① Chọn Chạy ngay lập tức',
+                next: '② Chạm Tiếp',
+                pick: 'Chọn phím tắt này',
+                wallet: 'Chọn Ví',
+                msgCheck: 'Kiểm tra là Tin nhắn',
+                word: 'Nhập từ (ví dụ: Approved)',
+                expand: 'Chạm để mở rộng',
+                setBoth: 'Thiết lập như thế này',
+                appChip: 'Chạm để chọn ứng dụng',
+                appPick: 'Chọn ứng dụng thẻ hoặc ngân hàng',
+                appAdd: 'Thêm ứng dụng',
+                autoOn: 'Bật Tự động hóa',
+                cardChip: 'Chạm để chọn thẻ',
+                trigMsg: 'Tin nhắn thanh toán thẻ',
+                trigWal: 'Apple Pay',
+                trigNoti: 'Thông báo thanh toán'
+            },
             w26: [
                 'Trong tab **Tự động hóa**, chạm **+** (hoặc **Tự động hóa mới**) và chọn **Ví**.',
                 'Chọn các thẻ muốn dùng, chọn **Chạy ngay lập tức** và chạm **Tiếp**. Có thể để tắt **Thông báo khi chạy**.',
@@ -365,16 +536,16 @@
             n26: 'Trên iOS 26 trở xuống, Phím tắt không thể phản hồi thông báo của ứng dụng. Hãy dùng tin nhắn thanh toán thẻ hoặc Apple Pay, hoặc cập nhật lên iOS 27.',
             i27: 'Trên iOS 27, tự động hóa đã nằm sẵn trong phím tắt. Sau khi thêm, hãy mở phím tắt trong **Thư viện** một lần và kiểm tra các thiết lập bên dưới.',
             m27: [
-                'Nếu khung có viền nét đứt và nhắc bạn thiết lập, hãy kiểm tra ô đầu tiên là **Tin nhắn** chứ không phải **Người gửi**. Sau đó chạm ô màu xanh nhạt sau **chứa** và nhập một từ luôn có trong tin nhắn thanh toán (ví dụ trong hình: Approved).',
-                'Khi đã nhập từ, lời nhắc sẽ biến mất.',
-                'Kiểm tra **Tự động hóa** đang bật và **Xác nhận trước khi chạy** đang tắt.'
+                'Kiểm tra ô đầu tiên là **Tin nhắn**, rồi nhập một từ luôn có trong tin nhắn thanh toán vào ô sau **chứa**.',
+                'Nhập xong, chạm mũi tên để mở rộng.',
+                'Bật **Tự động hóa** và tắt **Xác nhận trước khi chạy**.'
             ],
             n27: [
                 'Chạm ô ứng dụng màu xanh nhạt.',
                 'Chọn ứng dụng thẻ hoặc ngân hàng bạn dùng.',
-                'Để thêm ứng dụng, chạm **+**. Kiểm tra **Tự động hóa** đang bật. Có thể để tắt **Thông báo**.'
+                'Để thêm ứng dụng, chạm **+**. Chạm mũi tên để mở rộng rồi bật **Tự động hóa**. Có thể để tắt **Thông báo**.'
             ],
-            w27: ['Mặc định là **Bất kỳ thẻ nào**. Chạm vào để chỉ chọn một số thẻ. Kiểm tra **Tự động hóa** đang bật.'],
+            w27: ['Mặc định là **Bất kỳ thẻ nào**. Chạm vào để chỉ chọn một số thẻ. Chạm mũi tên để mở rộng rồi bật **Tự động hóa**.'],
             hAdd: 'Nếu không có tự động hóa',
             add27: ['Mở phím tắt, chạm ô tìm kiếm ở dưới cùng, chạm **Tự động hóa**, rồi chọn **Tin nhắn**, **Thông báo** hoặc **Ví**. Sau đó thiết lập như trên.'],
             hTr: 'Khi gặp sự cố',
@@ -383,13 +554,14 @@
                 'Lần nào cũng hỏi trước khi chạy: chọn **Chạy ngay lập tức** (iOS 26) hoặc tắt **Xác nhận trước khi chạy** (iOS 27).',
                 'Phím tắt không chạy hoặc báo lỗi: mở Pockee một lần rồi thử lại.',
                 'Thiếu một số khoản Apple Pay: tự động hóa Ví chạy khi bạn thanh toán bằng iPhone. Thanh toán trực tuyến và thanh toán bằng Apple Watch có thể không kích hoạt.',
-                'Mọi khoản thanh toán đều chờ trong danh sách chờ của Pockee để bạn kiểm tra trước khi lưu.'
+                'Mọi khoản thanh toán đều nằm trong danh sách chờ của Pockee để bạn kiểm tra rồi ghi thành giao dịch.'
             ],
             done: 'Khi khoản thanh toán đầu tiên đến, màn hình **Kết nối phím tắt** của Pockee sẽ hiện **Đã kết nối**.'
         },
         ms: {
             title: 'Sediakan rekod pembayaran automatik',
-            intro: 'iPhone tidak membenarkan apl membaca pemberitahuan atau mesej apl lain. Dengan automasi Pintasan, setiap pembayaran dihantar ke Pockee dan muncul dalam senarai menunggu, sedia untuk disimpan.',
+            intro: 'iPhone tidak dapat terus membaca pemberitahuan atau mesej apl lain. Untuk menghantar butiran pembayaran ke Pockee, **anda perlu menyediakan automasi Pintasan.**',
+            intro2: 'Butiran pembayaran yang dihantar melalui pintasan **disimpan secara automatik dalam senarai menunggu** Pockee, dan anda boleh merekodkannya sebagai transaksi dengan mudah dari situ.',
             osQ: 'Versi iOS anda', os26: 'iOS 26 atau lebih awal', os27: 'iOS 27 atau lebih baharu',
             osHint: 'Tidak pasti? Semak di **Seting > Umum > Perihal**.',
             s0h: 'Langkah 1. Tambah pintasan',
@@ -398,15 +570,40 @@
             hMsg: 'Teks pembayaran kad', hWal: 'Apple Pay', hNoti: 'Pemberitahuan pembayaran',
             hVid: 'Video panduan', vidSoon: 'Video sedang disediakan.',
             m26: [
-                'Buka apl **Pintasan**. Pintasan yang ditambah ada dalam **Pustaka**.',
-                'Ketik tab **Automasi** di bawah, kemudian **Automasi Baharu**. Jika anda sudah ada automasi, ketik **+** di penjuru kanan atas.',
+                'Semak pintasan yang ditambah dalam **Pustaka** pada apl **Pintasan**.',
+                'Dalam tab **Automasi**, ketik **Automasi Baharu**. Jika anda sudah ada automasi, ketik **+** di penjuru kanan atas.',
                 'Skrol ke bawah dan pilih **Mesej**.',
-                'Biarkan **Pengirim** sebagai **Sebarang Pengirim**. Ketik **Mesej Mengandungi**, masukkan perkataan yang sentiasa ada dalam teks pembayaran bank anda (contoh dalam gambar: Approved), kemudian ketik **Selesai**.',
+                'Dalam **Mesej Mengandungi**, masukkan perkataan yang sentiasa ada dalam teks pembayaran. Biarkan **Pengirim** seperti sedia ada.',
                 'Pilih **Jalankan Serta-merta**, kemudian ketik **Seterusnya**.',
-                'Di bawah **Pintasan Saya**, pilih **Pockee Payment SMS**.',
+                'Pilih **Pockee Payment SMS**.',
                 'Automasi telah disimpan. Mulai sekarang, teks pembayaran kad dihantar ke Pockee.'
             ],
             m26note: 'Jika kad anda menghantar teks dengan perkataan berbeza, tambah satu lagi automasi dengan perkataan lain.',
+            bub: {
+                library: 'Pintasan yang baru ditambah',
+                autoTab: '① Tab Automasi',
+                newAuto: '② Automasi Baharu',
+                message: 'Pilih Mesej',
+                contains: 'Ketik untuk membuka input',
+                keyword: 'Perkataan yang sentiasa ada (cth: Approved)',
+                done: 'Masukkan, kemudian ketik Selesai',
+                runNow: '① Pilih Jalankan Serta-merta',
+                next: '② Ketik Seterusnya',
+                pick: 'Pilih pintasan ini',
+                wallet: 'Pilih Wallet',
+                msgCheck: 'Semak ia Mesej',
+                word: 'Isi perkataan (cth: Approved)',
+                expand: 'Ketik untuk kembangkan',
+                setBoth: 'Tetapkan begini',
+                appChip: 'Ketik untuk pilih apl',
+                appPick: 'Pilih apl kad atau bank',
+                appAdd: 'Tambah apl',
+                autoOn: 'Hidupkan Automasi',
+                cardChip: 'Ketik untuk pilih kad',
+                trigMsg: 'Teks pembayaran kad',
+                trigWal: 'Apple Pay',
+                trigNoti: 'Pemberitahuan pembayaran'
+            },
             w26: [
                 'Dalam tab **Automasi**, ketik **+** (atau **Automasi Baharu**) dan pilih **Wallet**.',
                 'Pilih kad yang hendak digunakan, pilih **Jalankan Serta-merta** dan ketik **Seterusnya**. **Maklumkan Apabila Dijalankan** boleh dibiarkan mati.',
@@ -415,16 +612,16 @@
             n26: 'Pada iOS 26 dan lebih awal, Pintasan tidak dapat bertindak balas kepada pemberitahuan apl. Gunakan teks pembayaran kad atau Apple Pay, atau kemas kini ke iOS 27.',
             i27: 'Pada iOS 27, automasi sudah termasuk dalam pintasan. Selepas menambahnya, buka pintasan itu dalam **Pustaka** sekali dan semak tetapan di bawah.',
             m27: [
-                'Jika kotak mempunyai sempadan putus-putus dan meminta anda mengkonfigurasinya, pastikan medan pertama ialah **Mesej**, bukan **Pengirim**. Kemudian ketik medan biru muda selepas **mengandungi** dan masukkan perkataan yang sentiasa ada dalam teks pembayaran (contoh dalam gambar: Approved).',
-                'Selepas perkataan dimasukkan, notis itu hilang.',
-                'Pastikan **Automasi** hidup dan **Sahkan Sebelum Jalankan** mati.'
+                'Pastikan medan pertama ialah **Mesej**, kemudian masukkan perkataan yang sentiasa ada dalam teks pembayaran dalam medan selepas **mengandungi**.',
+                'Selepas selesai, ketik anak panah untuk mengembangkannya.',
+                'Hidupkan **Automasi** dan matikan **Sahkan Sebelum Jalankan**.'
             ],
             n27: [
                 'Ketik medan apl berwarna biru muda.',
                 'Pilih apl kad atau bank anda.',
-                'Untuk menambah apl lain, ketik **+**. Pastikan **Automasi** hidup. **Maklumkan** boleh dibiarkan mati.'
+                'Untuk menambah apl lain, ketik **+**. Ketik anak panah untuk mengembangkannya, kemudian hidupkan **Automasi**. **Maklumkan** boleh dibiarkan mati.'
             ],
-            w27: ['Lalai ialah **Sebarang Kad**. Ketik untuk memilih kad tertentu sahaja. Pastikan **Automasi** hidup.'],
+            w27: ['Lalai ialah **Sebarang Kad**. Ketik untuk memilih kad tertentu sahaja. Ketik anak panah untuk mengembangkannya, kemudian hidupkan **Automasi**.'],
             hAdd: 'Jika automasi tiada',
             add27: ['Buka pintasan, ketik medan carian di bawah, ketik **Automasi**, kemudian pilih **Mesej**, **Pemberitahuan** atau **Wallet**. Kemudian sediakan seperti di atas.'],
             hTr: 'Penyelesaian masalah',
@@ -433,13 +630,14 @@
                 'Ditanya setiap kali sebelum dijalankan: pilih **Jalankan Serta-merta** (iOS 26) atau matikan **Sahkan Sebelum Jalankan** (iOS 27).',
                 'Pintasan tidak berjalan atau menunjukkan ralat: buka Pockee sekali, kemudian cuba lagi.',
                 'Sesetengah pembayaran Apple Pay tiada: automasi Wallet berjalan apabila anda membayar dengan iPhone. Pembayaran dalam talian dan pembayaran Apple Watch mungkin tidak mencetuskannya.',
-                'Setiap pembayaran menunggu dalam senarai menunggu Pockee, jadi anda boleh menyemaknya sebelum menyimpan.'
+                'Setiap pembayaran menunggu dalam senarai menunggu Pockee, jadi anda boleh menyemaknya dan merekodkannya sebagai transaksi.'
             ],
             done: 'Apabila pembayaran pertama tiba, skrin **Shortcut Setup** dalam Pockee menunjukkan **Connected**.'
         },
         hi: {
             title: 'भुगतान अपने आप दर्ज करने की सेटिंग',
-            intro: 'iPhone पर ऐप दूसरे ऐप की सूचनाएँ या संदेश नहीं पढ़ सकते। शॉर्टकट ऑटोमेशन चालू करने पर हर भुगतान Pockee को भेजा जाता है और प्रतीक्षा सूची में आ जाता है, जहाँ से आप उसे तुरंत सहेज सकते हैं।',
+            intro: 'iPhone पर दूसरे ऐप की सूचनाएँ या संदेश सीधे नहीं पढ़े जा सकते। भुगतान की जानकारी Pockee को भेजने के लिए **शॉर्टकट ऑटोमेशन सेट करना ज़रूरी है।**',
+            intro2: 'शॉर्टकट से भेजी गई भुगतान जानकारी Pockee की **प्रतीक्षा सूची में अपने आप सहेजी जाती है**, और वहाँ से आप उसे आसानी से लेन-देन के रूप में दर्ज कर सकते हैं।',
             osQ: 'आपका iOS संस्करण', os26: 'iOS 26 या पहले का', os27: 'iOS 27 या बाद का',
             osHint: 'पक्का नहीं पता? **सेटिंग्ज़ > सामान्य > परिचय** में देखें।',
             s0h: 'चरण 1. शॉर्टकट जोड़ें',
@@ -448,15 +646,40 @@
             hMsg: 'कार्ड भुगतान SMS', hWal: 'Apple Pay', hNoti: 'भुगतान सूचनाएँ',
             hVid: 'वीडियो गाइड', vidSoon: 'यह वीडियो जल्द आएगा।',
             m26: [
-                '**शॉर्टकट** ऐप खोलें। जोड़ा गया शॉर्टकट **लाइब्रेरी** में है।',
-                'नीचे **ऑटोमेशन** टैब पर टैप करें, फिर **नया ऑटोमेशन** पर। अगर पहले से ऑटोमेशन हैं, तो ऊपर दाईं ओर **+** पर टैप करें।',
+                '**शॉर्टकट** ऐप की **लाइब्रेरी** में जोड़ा गया शॉर्टकट देखें।',
+                '**ऑटोमेशन** टैब में **नया ऑटोमेशन** पर टैप करें। अगर पहले से ऑटोमेशन हैं, तो ऊपर दाईं ओर **+** पर टैप करें।',
                 'नीचे स्क्रॉल करके **संदेश** चुनें।',
-                '**प्रेषक** को **कोई प्रेषक** ही रहने दें। **संदेश में शामिल है** पर टैप करें, आपके बैंक के हर भुगतान संदेश में आने वाला कोई शब्द लिखें (चित्र में उदाहरण: Approved), फिर **पूर्ण** पर टैप करें।',
+                '**संदेश में शामिल है** में भुगतान संदेश में हमेशा आने वाला शब्द लिखें। **प्रेषक** को वैसे ही रहने दें।',
                 '**तत्काल चलाएँ** चुनें, फिर **अगला** पर टैप करें।',
-                '**मेरे शॉर्टकट** में **Pockee Payment SMS** चुनें।',
+                '**Pockee Payment SMS** चुनें।',
                 'ऑटोमेशन सहेज लिया गया। अब कार्ड भुगतान संदेश Pockee को भेजे जाएँगे।'
             ],
             m26note: 'अगर अलग-अलग कार्ड के संदेशों के शब्द अलग हैं, तो दूसरे शब्द से एक और ऑटोमेशन बनाएँ।',
+            bub: {
+                library: 'अभी जोड़ा गया शॉर्टकट',
+                autoTab: '① ऑटोमेशन टैब',
+                newAuto: '② नया ऑटोमेशन',
+                message: 'संदेश चुनें',
+                contains: 'इनपुट खोलने के लिए टैप करें',
+                keyword: 'हमेशा आने वाला शब्द (जैसे Approved)',
+                done: 'लिखकर पूर्ण पर टैप करें',
+                runNow: '① तत्काल चलाएँ चुनें',
+                next: '② अगला पर टैप करें',
+                pick: 'यह शॉर्टकट चुनें',
+                wallet: 'वॉलेट चुनें',
+                msgCheck: 'संदेश है, यह देखें',
+                word: 'शब्द लिखें (जैसे Approved)',
+                expand: 'खोलने के लिए टैप करें',
+                setBoth: 'ऐसे सेट करें',
+                appChip: 'ऐप चुनने के लिए टैप करें',
+                appPick: 'कार्ड या बैंक ऐप चुनें',
+                appAdd: 'और ऐप जोड़ें',
+                autoOn: 'ऑटोमेशन चालू करें',
+                cardChip: 'कार्ड चुनने के लिए टैप करें',
+                trigMsg: 'कार्ड भुगतान SMS',
+                trigWal: 'Apple Pay',
+                trigNoti: 'भुगतान सूचनाएँ'
+            },
             w26: [
                 '**ऑटोमेशन** टैब में **+** (या **नया ऑटोमेशन**) पर टैप करें और **वॉलेट** चुनें।',
                 'जिन कार्ड के लिए चाहिए उन्हें चुनें, **तत्काल चलाएँ** चुनें और **अगला** पर टैप करें। **चलाए जाने पर सूचित करें** बंद रह सकता है।',
@@ -465,16 +688,16 @@
             n26: 'iOS 26 या पहले के संस्करण में शॉर्टकट ऐप की सूचनाओं पर काम नहीं कर सकते। कार्ड भुगतान SMS या Apple Pay इस्तेमाल करें, या iOS 27 पर अपडेट करें।',
             i27: 'iOS 27 में ऑटोमेशन शॉर्टकट के अंदर ही होता है। जोड़ने के बाद **लाइब्रेरी** में शॉर्टकट को एक बार खोलें और नीचे की सेटिंग जाँचें।',
             m27: [
-                'अगर बॉक्स की किनारी बिंदीदार है और सेट करने को कहा जा रहा है, तो देखें कि पहला खाना **प्रेषक** नहीं, **संदेश** हो। फिर **इसे शामिल करता है** के बाद वाले हल्के नीले खाने पर टैप करें और भुगतान संदेश में हमेशा आने वाला शब्द लिखें (चित्र में उदाहरण: Approved)।',
-                'शब्द लिखते ही यह सूचना हट जाती है।',
-                'पक्का करें कि **ऑटोमेशन** चालू है और **चलाने से पहले पुष्टि करें** बंद है।'
+                'देखें कि पहला खाना **संदेश** हो, फिर **इसे शामिल करता है** के बाद वाले खाने में भुगतान संदेश में हमेशा आने वाला शब्द लिखें।',
+                'लिखने के बाद तीर पर टैप करके इसे खोलें।',
+                '**ऑटोमेशन** चालू करें और **चलाने से पहले पुष्टि करें** बंद रखें।'
             ],
             n27: [
                 'हल्के नीले ऐप वाले खाने पर टैप करें।',
                 'अपना कार्ड या बैंक ऐप चुनें।',
-                'और ऐप जोड़ने के लिए **+** पर टैप करें। पक्का करें कि **ऑटोमेशन** चालू है। **सूचित करें** बंद रह सकता है।'
+                'और ऐप जोड़ने के लिए **+** पर टैप करें। तीर पर टैप करके खोलें, फिर **ऑटोमेशन** चालू करें। **सूचित करें** बंद रह सकता है।'
             ],
-            w27: ['डिफ़ॉल्ट रूप से **कोई भी कार्ड** होता है। सिर्फ़ खास कार्ड चुनने के लिए उस पर टैप करें। पक्का करें कि **ऑटोमेशन** चालू है।'],
+            w27: ['डिफ़ॉल्ट रूप से **कोई भी कार्ड** होता है। सिर्फ़ खास कार्ड चुनने के लिए उस पर टैप करें। तीर पर टैप करके खोलें, फिर **ऑटोमेशन** चालू करें।'],
             hAdd: 'अगर ऑटोमेशन नहीं है',
             add27: ['शॉर्टकट खोलें, नीचे खोज वाले खाने पर टैप करें, **ऑटोमेशन** पर टैप करें, फिर **संदेश**, **सूचना** या **वॉलेट** चुनें। उसके बाद ऊपर की तरह सेट करें।'],
             hTr: 'समस्या आने पर',
@@ -483,13 +706,14 @@
                 'हर बार चलने से पहले पूछता है: **तत्काल चलाएँ** चुनें (iOS 26) या **चलाने से पहले पुष्टि करें** बंद करें (iOS 27)।',
                 'शॉर्टकट नहीं चलता या गड़बड़ी दिखाता है: Pockee को एक बार खोलें, फिर दोबारा कोशिश करें।',
                 'कुछ Apple Pay भुगतान छूट जाते हैं: वॉलेट ऑटोमेशन iPhone से भुगतान करने पर चलता है। ऑनलाइन भुगतान और Apple Watch से भुगतान पर यह शायद न चले।',
-                'हर भुगतान Pockee की प्रतीक्षा सूची में रहता है, इसलिए सहेजने से पहले आप उसे जाँच सकते हैं।'
+                'हर भुगतान Pockee की प्रतीक्षा सूची में रहता है, इसलिए आप उसे जाँचकर लेन-देन के रूप में दर्ज कर सकते हैं।'
             ],
             done: 'पहला भुगतान आने पर Pockee की **Shortcut Setup** स्क्रीन पर **Connected** दिखेगा।'
         },
         id: {
             title: 'Atur pencatatan pembayaran otomatis',
-            intro: 'iPhone tidak mengizinkan aplikasi membaca notifikasi atau pesan aplikasi lain. Dengan automasi Pintasan, setiap pembayaran dikirim ke Pockee dan muncul di daftar tunggu, siap disimpan.',
+            intro: 'iPhone tidak bisa langsung membaca notifikasi atau pesan dari aplikasi lain. Untuk mengirim detail pembayaran ke Pockee, **Anda perlu mengatur automasi Pintasan.**',
+            intro2: 'Detail pembayaran yang dikirim lewat pintasan **otomatis tersimpan di daftar tunggu** Pockee, dan dari sana Anda bisa dengan mudah mencatatnya sebagai transaksi.',
             osQ: 'Versi iOS Anda', os26: 'iOS 26 atau sebelumnya', os27: 'iOS 27 atau lebih baru',
             osHint: 'Tidak yakin? Periksa di **Pengaturan > Umum > Mengenai**.',
             s0h: 'Langkah 1. Tambahkan pintasan',
@@ -498,15 +722,40 @@
             hMsg: 'SMS pembayaran kartu', hWal: 'Apple Pay', hNoti: 'Notifikasi pembayaran',
             hVid: 'Video panduan', vidSoon: 'Video sedang disiapkan.',
             m26: [
-                'Buka app **Pintasan**. Pintasan yang ditambahkan ada di **Perpustakaan**.',
-                'Ketuk tab **Automasi** di bawah, lalu **Automasi Baru**. Jika sudah ada automasi, ketuk **+** di kanan atas.',
+                'Periksa pintasan yang ditambahkan di **Perpustakaan** pada app **Pintasan**.',
+                'Di tab **Automasi**, ketuk **Automasi Baru**. Jika sudah ada automasi, ketuk **+** di kanan atas.',
                 'Gulir ke bawah dan pilih **Pesan**.',
-                'Biarkan **Pengirim** tetap **Pengirim Mana Pun**. Ketuk **Pesan Berisi**, masukkan kata yang selalu ada di pesan pembayaran bank Anda (contoh di gambar: Approved), lalu ketuk **Selesai**.',
+                'Di **Pesan Berisi**, masukkan kata yang selalu ada di pesan pembayaran. Biarkan **Pengirim** apa adanya.',
                 'Pilih **Segera Jalankan**, lalu ketuk **Berikutnya**.',
-                'Di **Pintasan Saya**, pilih **Pockee Payment SMS**.',
+                'Pilih **Pockee Payment SMS**.',
                 'Automasi tersimpan. Mulai sekarang, pesan pembayaran kartu dikirim ke Pockee.'
             ],
             m26note: 'Jika kartu Anda mengirim pesan dengan kata berbeda, tambahkan satu automasi lagi dengan kata lain.',
+            bub: {
+                library: 'Pintasan yang baru ditambahkan',
+                autoTab: '① Tab Automasi',
+                newAuto: '② Automasi Baru',
+                message: 'Pilih Pesan',
+                contains: 'Ketuk untuk membuka input',
+                keyword: 'Kata yang selalu ada (mis. Approved)',
+                done: 'Masukkan, lalu ketuk Selesai',
+                runNow: '① Pilih Segera Jalankan',
+                next: '② Ketuk Berikutnya',
+                pick: 'Pilih pintasan ini',
+                wallet: 'Pilih Dompet',
+                msgCheck: 'Pastikan Pesan',
+                word: 'Masukkan kata (mis. Approved)',
+                expand: 'Ketuk untuk membuka',
+                setBoth: 'Atur seperti ini',
+                appChip: 'Ketuk untuk pilih app',
+                appPick: 'Pilih app kartu atau bank',
+                appAdd: 'Tambah app',
+                autoOn: 'Nyalakan Automasi',
+                cardChip: 'Ketuk untuk pilih kartu',
+                trigMsg: 'SMS pembayaran kartu',
+                trigWal: 'Apple Pay',
+                trigNoti: 'Notifikasi pembayaran'
+            },
             w26: [
                 'Di tab **Automasi**, ketuk **+** (atau **Automasi Baru**) dan pilih **Dompet**.',
                 'Pilih kartu yang ingin digunakan, pilih **Segera Jalankan**, dan ketuk **Berikutnya**. **Beri Tahu Saat Dijalankan** boleh tetap mati.',
@@ -515,16 +764,16 @@
             n26: 'Di iOS 26 dan sebelumnya, Pintasan tidak bisa merespons notifikasi aplikasi. Gunakan SMS pembayaran kartu atau Apple Pay, atau perbarui ke iOS 27.',
             i27: 'Di iOS 27, automasi sudah ada di dalam pintasan. Setelah menambahkannya, buka pintasan di **Perpustakaan** sekali dan periksa pengaturan di bawah.',
             m27: [
-                'Jika kotak bergaris putus-putus dan meminta Anda mengonfigurasinya, pastikan kolom pertama adalah **Pesan**, bukan **Pengirim**. Lalu ketuk kolom biru muda setelah **berisi** dan masukkan kata yang selalu ada di pesan pembayaran (contoh di gambar: Approved).',
-                'Setelah kata dimasukkan, pemberitahuan itu hilang.',
-                'Pastikan **Automasi** menyala dan **Konfirmasi Sebelum Menjalankan** mati.'
+                'Pastikan kolom pertama adalah **Pesan**, lalu masukkan kata yang selalu ada di pesan pembayaran pada kolom setelah **berisi**.',
+                'Setelah selesai, ketuk panah untuk membukanya.',
+                'Nyalakan **Automasi** dan matikan **Konfirmasi Sebelum Menjalankan**.'
             ],
             n27: [
                 'Ketuk kolom app berwarna biru muda.',
                 'Pilih app kartu atau bank Anda.',
-                'Untuk menambah app lain, ketuk **+**. Pastikan **Automasi** menyala. **Beri Tahu** boleh tetap mati.'
+                'Untuk menambah app lain, ketuk **+**. Ketuk panah untuk membukanya, lalu nyalakan **Automasi**. **Beri Tahu** boleh tetap mati.'
             ],
-            w27: ['Defaultnya **Kartu Apa Saja**. Ketuk untuk memilih kartu tertentu saja. Pastikan **Automasi** menyala.'],
+            w27: ['Defaultnya **Kartu Apa Saja**. Ketuk untuk memilih kartu tertentu saja. Ketuk panah untuk membukanya, lalu nyalakan **Automasi**.'],
             hAdd: 'Jika automasi tidak ada',
             add27: ['Buka pintasan, ketuk kolom pencarian di bawah, ketuk **Automasi**, lalu pilih **Pesan**, **Notifikasi**, atau **Dompet**. Setelah itu atur seperti di atas.'],
             hTr: 'Jika ada masalah',
@@ -533,7 +782,7 @@
                 'Selalu ditanya sebelum berjalan: pilih **Segera Jalankan** (iOS 26) atau matikan **Konfirmasi Sebelum Menjalankan** (iOS 27).',
                 'Pintasan tidak berjalan atau muncul error: buka Pockee sekali, lalu coba lagi.',
                 'Sebagian pembayaran Apple Pay tidak masuk: automasi Dompet berjalan saat Anda membayar dengan iPhone. Pembayaran online dan pembayaran dengan Apple Watch mungkin tidak memicunya.',
-                'Setiap pembayaran menunggu di daftar tunggu Pockee, jadi Anda bisa memeriksanya sebelum menyimpan.'
+                'Setiap pembayaran menunggu di daftar tunggu Pockee, jadi Anda bisa memeriksanya lalu mencatatnya sebagai transaksi.'
             ],
             done: 'Setelah pembayaran pertama masuk, layar **Hubungkan Pintasan** di Pockee menampilkan **Terhubung**.'
         }
@@ -561,11 +810,57 @@
         m27: [[['03-message-unset', 'crop']], [['04-message-set', 'crop']], [['05-message-options', 'crop']]],
         n27: [[['06-notification-unset', 'crop']], [['07-notification-app-picker', 'full']], [['08-notification-app-set', 'crop']]],
         w27: [[['09-wallet-options', 'crop']]],
-        add27: [[['02-triggers', 'full']]]
+        add27: [[['02-triggers-top', 'full'], ['02-triggers', 'full']]]
     };
     var FULL_H = 1174;
-    var CROP_H = { '04-message-trigger': 560, '06-message-run-immediately': 560, '03-message-unset': 425, '04-message-set': 425,
-                   '06-notification-unset': 425, '05-message-options': 493, '08-notification-app-set': 493, '09-wallet-options': 493 };
+    var CROP_H = { '04-message-trigger': 560, '06-message-run-immediately': 650, '03-message-unset': 425, '04-message-set': 425,
+                   '06-notification-unset': 425, '05-message-options': 560, '08-notification-app-set': 493, '09-wallet-options': 493 };
+    // 캡처 위 표시. box는 폭 540 기준 [x, y, w, h], b는 번역표 bub의 키, at은 말풍선이 놓일 쪽, x는 상자의 어느 쪽에 맞출지(l, c, r), w는 말풍선 최대 폭(생략 가능)
+    var IMG_W = 540;
+    var MARK = {
+        'ios26/ko': {
+            '01-library': [{ box: [274, 303, 247, 156], b: 'library', at: 'below', x: 'r' }],
+            '02-automation-tab': [{ box: [178, 705, 184, 73], b: 'newAuto', at: 'below', x: 'c' }, { box: [204, 1065, 132, 78], b: 'autoTab', at: 'above', x: 'c' }],
+            '03-triggers': [{ box: [27, 862, 486, 83], b: 'message', at: 'below', x: 'r' }],
+            '04-message-trigger': [{ box: [27, 371, 486, 71], b: 'contains', at: 'below', x: 'r' }],
+            '05-message-keyword': [{ box: [75, 385, 390, 64], b: 'keyword', at: 'above', x: 'c' }, { box: [275, 476, 189, 64], b: 'done', at: 'below', x: 'r' }],
+            '06-message-run-immediately': [{ box: [27, 562, 486, 70], b: 'runNow', at: 'above', x: 'r' }, { box: [433, 102, 88, 64], b: 'next', at: 'below', x: 'r' }],
+            '07-pick-shortcut': [{ box: [290, 595, 231, 156], b: 'pick', at: 'below', x: 'r' }],
+            '09-triggers-wallet': [{ box: [27, 480, 486, 82], b: 'wallet', at: 'below', x: 'r' }]
+        },
+        'ios27/ko': {
+            '03-message-unset': [{ box: [38, 362, 88, 40], b: 'msgCheck', at: 'above', x: 'l' }, { box: [268, 362, 90, 40], b: 'word', at: 'above', x: 'l' }],
+            '04-message-set': [{ box: [78, 241, 34, 34], b: 'expand', at: 'above', x: 'l' }],
+            '05-message-options': [{ box: [22, 418, 496, 118], b: 'setBoth', at: 'above', x: 'r' }],
+            '06-notification-unset': [{ box: [86, 249, 46, 42], b: 'appChip', at: 'below', x: 'l' }],
+            '07-notification-app-picker': [{ box: [22, 781, 496, 61], b: 'appPick', at: 'below', x: 'r' }],
+            '08-notification-app-set': [{ box: [189, 195, 44, 40], b: 'appAdd', at: 'above', x: 'l' }, { box: [130, 242, 34, 34], b: 'expand', at: 'below', x: 'l' }, { box: [412, 368, 91, 42], b: 'autoOn', at: 'above', x: 'r' }],
+            '09-wallet-options': [{ box: [87, 195, 118, 40], b: 'cardChip', at: 'above', x: 'l' }, { box: [368, 197, 36, 36], b: 'expand', at: 'below', x: 'r' }, { box: [412, 384, 91, 42], b: 'autoOn', at: 'above', x: 'r' }],
+            '02-triggers-top': [{ box: [27, 958, 486, 82], b: 'trigMsg', at: 'below', x: 'r' }],
+            '02-triggers': [{ box: [27, 544, 486, 82], b: 'trigWal', at: 'above', x: 'r' }, { box: [27, 745, 486, 83], b: 'trigNoti', at: 'below', x: 'r' }]
+        },
+        'ios26/en': {
+            '01-library': [{ box: [274, 303, 247, 156], b: 'library', at: 'below', x: 'r' }],
+            '02-automation-tab': [{ box: [150, 705, 240, 73], b: 'newAuto', at: 'below', x: 'c' }, { box: [204, 1065, 132, 78], b: 'autoTab', at: 'above', x: 'c' }],
+            '03-triggers': [{ box: [27, 862, 486, 83], b: 'message', at: 'below', x: 'r' }],
+            '04-message-trigger': [{ box: [27, 371, 486, 71], b: 'contains', at: 'below', x: 'r' }],
+            '05-message-keyword': [{ box: [75, 385, 390, 64], b: 'keyword', at: 'above', x: 'c' }, { box: [275, 476, 189, 64], b: 'done', at: 'below', x: 'r' }],
+            '06-message-run-immediately': [{ box: [27, 562, 486, 70], b: 'runNow', at: 'above', x: 'r' }, { box: [433, 102, 88, 64], b: 'next', at: 'below', x: 'r' }],
+            '07-pick-shortcut': [{ box: [290, 595, 231, 156], b: 'pick', at: 'below', x: 'r' }],
+            '09-triggers-wallet': [{ box: [27, 585, 486, 82], b: 'wallet', at: 'below', x: 'r' }]
+        },
+        'ios27/en': {
+            '03-message-unset': [{ box: [38, 362, 120, 40], b: 'msgCheck', at: 'above', x: 'l', w: 240 }, { box: [288, 362, 72, 40], b: 'word', at: 'above', x: 'l' }],
+            '04-message-set': [{ box: [127, 240, 38, 36], b: 'expand', at: 'above', x: 'l' }],
+            '05-message-options': [{ box: [22, 418, 496, 118], b: 'setBoth', at: 'above', x: 'r' }],
+            '06-notification-unset': [{ box: [115, 293, 58, 42], b: 'appChip', at: 'below', x: 'l' }],
+            '07-notification-app-picker': [{ box: [22, 936, 496, 61], b: 'appPick', at: 'below', x: 'r' }],
+            '08-notification-app-set': [{ box: [243, 238, 38, 40], b: 'appAdd', at: 'above', x: 'r' }, { box: [293, 240, 36, 36], b: 'expand', at: 'above', x: 'l' }, { box: [412, 368, 91, 42], b: 'autoOn', at: 'above', x: 'r' }],
+            '09-wallet-options': [{ box: [170, 195, 126, 40], b: 'cardChip', at: 'above', x: 'l' }, { box: [139, 240, 36, 36], b: 'expand', at: 'below', x: 'l' }, { box: [412, 426, 91, 42], b: 'autoOn', at: 'above', x: 'r' }],
+            '02-triggers-top': [{ box: [27, 958, 486, 82], b: 'trigMsg', at: 'below', x: 'r' }],
+            '02-triggers': [{ box: [27, 542, 486, 82], b: 'trigWal', at: 'above', x: 'r' }, { box: [27, 743, 486, 83], b: 'trigNoti', at: 'below', x: 'r' }]
+        }
+    };
 
     function pick() {
         var q = /[?&]lang=([a-zA-Z-]+)/.exec(location.search);
@@ -591,13 +886,29 @@
     }
     function setRich(id, s) { document.getElementById(id).innerHTML = rich(s); }
 
+    function pct(v) { return (v * 100).toFixed(2) + '%'; }
+    function marks(os, name, h) {
+        var list = (MARK[os + '/' + imgLang] || {})[name] || [];
+        var html = '';
+        for (var i = 0; i < list.length; i++) {
+            var m = list[i], x = m.box[0] / IMG_W, y = m.box[1] / h, w = m.box[2] / IMG_W, bh = m.box[3] / h;
+            var side = m.at === 'below' ? 'top:' + pct(y + bh) : 'bottom:' + pct(1 - y);
+            var align = m.x === 'l' ? 'left:' + pct(x) : m.x === 'r' ? 'right:' + pct(1 - x - w) : 'left:' + pct(x + w / 2);
+            // 글이 길면 캡처 안에서 줄바꿈되게 말풍선이 뻗는 쪽의 남은 폭까지만 넓어진다
+            var room = m.x === 'l' ? 1 - x : m.x === 'r' ? x + w : 1;
+            var maxW = Math.min(m.w ? m.w / IMG_W : 0.72, room);
+            html += '<span class="mk" style="left:' + pct(x) + ';top:' + pct(y) + ';width:' + pct(w) + ';height:' + pct(bh) + '"></span>' +
+                    '<span class="bub ' + m.at + ' ' + m.x + '" style="' + side + ';' + align + ';max-width:' + pct(maxW) + '">' + rich(t.bub[m.b]) + '</span>';
+        }
+        return html;
+    }
     function shots(os, list) {
         if (!list || !list.length) return '';
         var html = '<div class="shots">';
         for (var i = 0; i < list.length; i++) {
             var name = list[i][0], kind = list[i][1];
             var h = kind === 'full' ? FULL_H : CROP_H[name];
-            html += '<img class="' + kind + '" loading="lazy" alt="" width="540" height="' + h + '" src="../assets/images/guide/payment-shortcut/' + os + '/' + imgLang + '/' + name + '.webp">';
+            html += '<span class="shot ' + kind + '"><img loading="lazy" alt="" width="540" height="' + h + '" src="../assets/images/guide/payment-shortcut/' + os + '/' + imgLang + '/' + name + '.webp">' + marks(os, name, h) + '</span>';
         }
         return html + '</div>';
     }
@@ -616,6 +927,7 @@
     document.title = t.title + ' - Pockee';
     setRich('title', t.title);
     setRich('intro', t.intro);
+    setRich('intro2', t.intro2);
     setRich('osQ', t.osQ);
     setRich('btn26', t.os26);
     setRich('btn27', t.os27);

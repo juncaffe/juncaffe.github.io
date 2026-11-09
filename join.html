@@ -7,6 +7,17 @@
     <meta name="robots" content="noindex, nofollow">
     <meta name="referrer" content="no-referrer">
     <meta name="theme-color" content="#FFF9F0">
+    <script>
+    // Safari 스마트 앱 배너. [열기]를 누르면 app-argument(https://pockee.app/join#PIN)가 앱 onOpenURL로 간다. 앱이 없으면 [받기].
+    // PIN은 #에서 읽어 넣으므로 head를 읽는 중에 붙인다.
+    (function () {
+        var m = /^#(\d{6})$/.exec(location.hash);
+        var meta = document.createElement('meta');
+        meta.name = 'apple-itunes-app';
+        meta.content = 'app-id=6829112661' + (m ? ', app-argument=https://pockee.app/join#' + m[1] : '');
+        document.head.appendChild(meta);
+    })();
+    </script>
     <link rel="icon" type="image/webp" href="assets/images/ic_launcher_512px.webp">
     <!-- 이 페이지의 #PIN은 서버·분석 도구로 보내지 않는다(gtag 등 외부 스크립트 없음). -->
     <style>
@@ -36,15 +47,15 @@
 <script>
 (function () {
     var T = {
-        en: ['Join a shared ledger', 'Open this link on a phone with Pockee installed to join automatically. If the app did not open, enter the PIN below.', 'Invite PIN (valid for a limited time)', 'In Pockee: Ledger list > Join shared ledger, then enter the PIN.', 'Get Pockee'],
-        ko: ['공동 가계부 참여', 'Pockee가 설치된 휴대폰에서 이 링크를 열면 자동으로 참여 화면이 열려요. 앱이 열리지 않았다면 아래 PIN을 직접 입력하세요.', '초대 PIN (정해진 시간 동안만 사용할 수 있어요)', 'Pockee 앱에서 가계부 목록 > 공동 가계부 참여를 눌러 PIN을 입력하세요.', 'Pockee 받기'],
-        ja: ['共有家計簿に参加', 'Pockeeがインストールされたスマートフォンでこのリンクを開くと、自動で参加画面が開きます。アプリが開かない場合は、下のPINを入力してください。', '招待PIN(一定時間のみ有効)', 'Pockeeアプリで 家計簿一覧 > 共有家計簿に参加 を開き、PINを入力してください。', 'Pockeeを入手'],
-        'zh-cn': ['加入共享账本', '在已安装 Pockee 的手机上打开此链接即可自动加入。如果应用没有打开，请输入下方的 PIN。', '邀请 PIN(仅在限定时间内有效)', '在 Pockee 中打开 账本列表 > 加入共享账本，然后输入 PIN。', '获取 Pockee'],
-        'zh-tw': ['加入共享帳本', '在已安裝 Pockee 的手機上開啟此連結即可自動加入。如果應用程式沒有開啟，請輸入下方的 PIN。', '邀請 PIN(僅在限定時間內有效)', '在 Pockee 中開啟 帳本列表 > 加入共享帳本，然後輸入 PIN。', '取得 Pockee'],
-        vi: ['Tham gia sổ chung', 'Mở liên kết này trên điện thoại đã cài Pockee để tự động tham gia. Nếu ứng dụng không mở, hãy nhập mã PIN bên dưới.', 'PIN mời (chỉ có hiệu lực trong thời gian giới hạn)', 'Trong Pockee: Danh sách sổ > Tham gia sổ chung, rồi nhập mã PIN.', 'Tải Pockee'],
-        ms: ['Sertai lejar kongsi', 'Buka pautan ini pada telefon yang memasang Pockee untuk menyertai secara automatik. Jika aplikasi tidak dibuka, masukkan PIN di bawah.', 'PIN jemputan (sah untuk masa terhad sahaja)', 'Dalam Pockee: Senarai lejar > Sertai lejar kongsi, kemudian masukkan PIN.', 'Dapatkan Pockee'],
-        hi: ['साझा खाताबही से जुड़ें', 'Pockee इंस्टॉल वाले फ़ोन पर यह लिंक खोलने से आप अपने आप जुड़ जाएँगे। अगर ऐप नहीं खुला, तो नीचे दिया PIN दर्ज करें।', 'आमंत्रण PIN (सीमित समय के लिए मान्य)', 'Pockee में: खाताबही सूची > साझा खाताबही से जुड़ें खोलें, फिर PIN दर्ज करें।', 'Pockee पाएँ'],
-        id: ['Gabung buku kas bersama', 'Buka tautan ini di ponsel yang sudah terpasang Pockee untuk bergabung otomatis. Jika aplikasi tidak terbuka, masukkan PIN di bawah.', 'PIN undangan (hanya berlaku dalam waktu terbatas)', 'Di Pockee: Daftar buku kas > Gabung buku kas bersama, lalu masukkan PIN.', 'Dapatkan Pockee']
+        en: ['Join a shared ledger', 'Open this link on a phone with Pockee installed to join automatically. If the app did not open, enter the PIN below.', 'Invite PIN (valid for a limited time)', 'In Pockee: Ledger list > Join shared ledger, then enter the PIN.', 'Get Pockee', 'Open in Pockee'],
+        ko: ['공동 가계부 참여', 'Pockee가 설치된 휴대폰에서 이 링크를 열면 자동으로 참여 화면이 열려요. 앱이 열리지 않았다면 아래 PIN을 직접 입력하세요.', '초대 PIN (정해진 시간 동안만 사용할 수 있어요)', 'Pockee 앱에서 가계부 목록 > 공동 가계부 참여를 눌러 PIN을 입력하세요.', 'Pockee 받기', 'Pockee에서 열기'],
+        ja: ['共有家計簿に参加', 'Pockeeがインストールされたスマートフォンでこのリンクを開くと、自動で参加画面が開きます。アプリが開かない場合は、下のPINを入力してください。', '招待PIN(一定時間のみ有効)', 'Pockeeアプリで 家計簿一覧 > 共有家計簿に参加 を開き、PINを入力してください。', 'Pockeeを入手', 'Pockeeで開く'],
+        'zh-cn': ['加入共享账本', '在已安装 Pockee 的手机上打开此链接即可自动加入。如果应用没有打开，请输入下方的 PIN。', '邀请 PIN(仅在限定时间内有效)', '在 Pockee 中打开 账本列表 > 加入共享账本，然后输入 PIN。', '获取 Pockee', '在 Pockee 中打开'],
+        'zh-tw': ['加入共享帳本', '在已安裝 Pockee 的手機上開啟此連結即可自動加入。如果應用程式沒有開啟，請輸入下方的 PIN。', '邀請 PIN(僅在限定時間內有效)', '在 Pockee 中開啟 帳本列表 > 加入共享帳本，然後輸入 PIN。', '取得 Pockee', '在 Pockee 中開啟'],
+        vi: ['Tham gia sổ chung', 'Mở liên kết này trên điện thoại đã cài Pockee để tự động tham gia. Nếu ứng dụng không mở, hãy nhập mã PIN bên dưới.', 'PIN mời (chỉ có hiệu lực trong thời gian giới hạn)', 'Trong Pockee: Danh sách sổ > Tham gia sổ chung, rồi nhập mã PIN.', 'Tải Pockee', 'Mở trong Pockee'],
+        ms: ['Sertai lejar kongsi', 'Buka pautan ini pada telefon yang memasang Pockee untuk menyertai secara automatik. Jika aplikasi tidak dibuka, masukkan PIN di bawah.', 'PIN jemputan (sah untuk masa terhad sahaja)', 'Dalam Pockee: Senarai lejar > Sertai lejar kongsi, kemudian masukkan PIN.', 'Dapatkan Pockee', 'Buka dalam Pockee'],
+        hi: ['साझा खाताबही से जुड़ें', 'Pockee इंस्टॉल वाले फ़ोन पर यह लिंक खोलने से आप अपने आप जुड़ जाएँगे। अगर ऐप नहीं खुला, तो नीचे दिया PIN दर्ज करें।', 'आमंत्रण PIN (सीमित समय के लिए मान्य)', 'Pockee में: खाताबही सूची > साझा खाताबही से जुड़ें खोलें, फिर PIN दर्ज करें।', 'Pockee पाएँ', 'Pockee में खोलें'],
+        id: ['Gabung buku kas bersama', 'Buka tautan ini di ponsel yang sudah terpasang Pockee untuk bergabung otomatis. Jika aplikasi tidak terbuka, masukkan PIN di bawah.', 'PIN undangan (hanya berlaku dalam waktu terbatas)', 'Di Pockee: Daftar buku kas > Gabung buku kas bersama, lalu masukkan PIN.', 'Dapatkan Pockee', 'Buka di Pockee']
     };
     function pick() {
         var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'en'];
@@ -70,6 +81,13 @@
     if (m) {
         document.getElementById('pin').textContent = m[1];
         document.getElementById('pinCard').hidden = false;
+        // 앱 안 브라우저 · 주소창으로 연 경우 App Links가 실행되지 않으므로 버튼이 앱을 직접 연다(없으면 Play 스토어).
+        // parseUri는 마지막 '#'부터 Intent 문법으로 읽어 앱에는 https://pockee.app/join#PIN이 그대로 간다.
+        if (/Android/i.test(navigator.userAgent)) {
+            var store = document.getElementById('store');
+            store.href = 'intent://pockee.app/join#' + m[1] + '#Intent;scheme=https;package=com.juncaffe.pockee;S.browser_fallback_url=' + encodeURIComponent(store.href) + ';end';
+            store.textContent = t[5];
+        }
     }
 })();
 </script>
